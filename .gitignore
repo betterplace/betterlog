@@ -1,0 +1,14 @@
+.*.sw[pon]
+.AppleDouble
+.DS_Store
+.bundle
+.byebug_history
+.ruby-version
+.rvmrc
+.utilsrc
+.yardoc
+Gemfile.lock
+coverage
+errors.lst
+pkg
+tags
