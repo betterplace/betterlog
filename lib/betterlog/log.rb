@@ -1,6 +1,7 @@
 require 'tins'
 require 'tins/xt'
 require 'betterlog/log/event'
+require 'betterlog/log/event_formatter'
 require 'betterlog/log/severity'
 
 class Log

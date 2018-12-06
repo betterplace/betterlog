@@ -1,9 +1,6 @@
 #!/usr/bin/env ruby
 # vim: set ft=ruby et sw=2 ts=2:
 
-APP_PATH = File.expand_path('../config/application', __dir__)
-# require_relative '../config/boot'
-
 require 'betterlog'
 require 'tins/go'
 require 'file-tail'
