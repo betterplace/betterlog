@@ -144,7 +144,7 @@ class Log
     private
 
     def meta
-      {
+      m = {
         timestamp: Time.now.utc.iso8601(3),
         pid:       $$,
         program:   File.basename($0),
@@ -152,9 +152,12 @@ class Log
         type:      'rails',
         facility:  'local0',
         host:      (Socket.gethostname rescue nil),
-        request_id: Thread.current['X_REQUEST_ID'] || 'unknown',
         thread_id:  Thread.current.object_id
       }
+      if defined? GlobalMetadata
+        m |= GlobalMetadata.data
+      end
+      m
     end
   end
 end
