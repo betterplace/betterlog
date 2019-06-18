@@ -8,15 +8,15 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = Gem::Requirement.new(">= 0".freeze) if s.respond_to? :required_rubygems_version=
   s.require_paths = ["lib".freeze]
   s.authors = ["betterplace Developers".freeze]
-  s.date = "2019-01-10"
+  s.date = "2019-06-18"
   s.description = "This library provides structure json logging for our rails projects".freeze
   s.email = "developers@betterplace.org".freeze
   s.executables = ["betterlog".freeze]
-  s.extra_rdoc_files = ["README.md".freeze, "lib/betterdocs/version.rb".freeze, "lib/betterlog.rb".freeze, "lib/betterlog/betterlog_railtie.rb".freeze, "lib/betterlog/global_metadata.rb".freeze, "lib/betterlog/log.rb".freeze, "lib/betterlog/log/event.rb".freeze, "lib/betterlog/log/event_formatter.rb".freeze, "lib/betterlog/log/severity.rb".freeze, "lib/betterlog/log_event_formatter.rb".freeze, "lib/betterlog/version.rb".freeze]
-  s.files = [".gitignore".freeze, "Gemfile".freeze, "LICENSE".freeze, "README.md".freeze, "Rakefile".freeze, "VERSION".freeze, "betterdocs.gemspec".freeze, "betterlog.gemspec".freeze, "bin/betterlog".freeze, "lib/betterdocs/version.rb".freeze, "lib/betterlog.rb".freeze, "lib/betterlog/betterlog_railtie.rb".freeze, "lib/betterlog/global_metadata.rb".freeze, "lib/betterlog/log.rb".freeze, "lib/betterlog/log/event.rb".freeze, "lib/betterlog/log/event_formatter.rb".freeze, "lib/betterlog/log/severity.rb".freeze, "lib/betterlog/log_event_formatter.rb".freeze, "lib/betterlog/version.rb".freeze, "log.yml".freeze]
+  s.extra_rdoc_files = ["README.md".freeze, "lib/betterlog.rb".freeze, "lib/betterlog/betterlog_railtie.rb".freeze, "lib/betterlog/global_metadata.rb".freeze, "lib/betterlog/log.rb".freeze, "lib/betterlog/log/event.rb".freeze, "lib/betterlog/log/event_formatter.rb".freeze, "lib/betterlog/log/severity.rb".freeze, "lib/betterlog/log_event_formatter.rb".freeze, "lib/betterlog/version.rb".freeze]
+  s.files = [".gitignore".freeze, "Gemfile".freeze, "LICENSE".freeze, "README.md".freeze, "Rakefile".freeze, "VERSION".freeze, "betterlog.gemspec".freeze, "bin/betterlog".freeze, "lib/betterlog.rb".freeze, "lib/betterlog/betterlog_railtie.rb".freeze, "lib/betterlog/global_metadata.rb".freeze, "lib/betterlog/log.rb".freeze, "lib/betterlog/log/event.rb".freeze, "lib/betterlog/log/event_formatter.rb".freeze, "lib/betterlog/log/severity.rb".freeze, "lib/betterlog/log_event_formatter.rb".freeze, "lib/betterlog/version.rb".freeze, "log.yml".freeze]
   s.homepage = "http://github.com/betterplace/betterlog".freeze
   s.rdoc_options = ["--title".freeze, "Betterlog".freeze, "--main".freeze, "README.md".freeze]
-  s.rubygems_version = "3.0.1".freeze
+  s.rubygems_version = "3.0.3".freeze
   s.summary = "Structured logging support for bp".freeze
 
   if s.respond_to? :specification_version then
