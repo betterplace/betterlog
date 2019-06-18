@@ -1,0 +1,34 @@
+#!/usr/bin/env ruby
+# vim: set ft=ruby et sw=2 ts=2:
+
+require 'betterlog'
+require 'excon'
+
+lines  = Integer(ENV.fetch('BETTERLOG_LINES', 1_000))
+url    = ENV.fetch('BETTERLOG_SERVER_URL')
+name   = ENV['BETTERLOG_NAME']
+redis  = Redis.new(url: ENV.fetch('REDIS_URL'))
+logger = Betterlog::Logger.new(redis, name: name)
+
+quit = false
+
+[ :TERM, :INT, :QUIT ].each { |s| trap(s) { quit = true } }
+
+STDOUT.sync = true
+loop do
+  count = 0
+  logger.each_slice(lines).with_index do |batch, i|
+    count.zero? and print ?(
+    count += batch.sum(&:size)
+    attempt(attempts: 10, sleep: -60, reraise: true) do
+      print ?┄
+      Excon.post(url, body: batch.join)
+    end
+  end
+  quit and exit
+  if count.zero?
+    sleep 1
+  else
+    print "→%s)" % Tins::Unit.format(count, format: '%.2f %U', prefix: 1024, unit: ?b)
+  end
+end

@@ -2,13 +2,19 @@ require 'tins/xt'
 require 'json'
 require 'logger'
 require 'time'
-require 'tins'
-require 'rails'
-
-require 'active_support'
 require 'term/ansicolor'
 
-require 'betterlog/global_metadata'
-require 'betterlog/betterlog_railtie'
+module Betterlog
+end
+
 require 'betterlog/log'
-require 'betterlog/log_event_formatter'
+require 'betterlog/notifiers'
+require 'betterlog/global_metadata'
+require 'betterlog/logger'
+
+if defined? Rails
+  require 'betterlog/log_event_formatter'
+  require 'betterlog/railtie'
+end
+
+Log = Betterlog::Log

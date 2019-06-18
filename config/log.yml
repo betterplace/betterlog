@@ -1,4 +1,4 @@
-default: &default
+development: &development
   styles:
     'timestamp': [ yellow, bold ]
     'file': [ blue, bold ]
@@ -32,9 +32,6 @@ default: &default
       {program}: {message}
     metric: >
       {%ft%timestamp} {metric} {value} {type}
-
-development:
-  <<: *default
   config_files:
     rails:
       - log/development.log
@@ -43,35 +40,8 @@ development:
     redis:
       - /usr/local/var/log/redis.log
     elasticsearch:
-      - /usr/local/var/log/elasticsearch@1.7.log
-    nginx:
-      - /usr/local/var/log/nginx/access.log
-      - /usr/local/var/log/nginx/error.log
-  legacy_supported: <%= ENV['LOG_LEGACY_SUPPORTED'].to_i == 1 %>
-
-test:
-  <<: *default
-  config_files:
-    test:
-      - log/test.log
-  legacy_supported: <%= ENV['LOG_LEGACY_SUPPORTED'].to_i == 1 %>
-
-production:
-  <<: *default
-  config_files:
-    rails:
-      - /var/apps/betterplace/current/log/production.log
-    cron:
-      - /var/apps/betterplace/current/log/cron.log
-    nginx:
-      - /var/apps/betterplace/current/log/nginx.assets.access.log
-      - /var/apps/betterplace/current/log/nginx.assets.error.log
-      - /var/apps/betterplace/current/log/nginx.betterplace.access.log
-      - /var/apps/betterplace/current/log/nginx.betterplace.error.log
-      - /var/apps/betterplace/current/log/nginx.default.access.log
-      - /var/apps/betterplace/current/log/nginx.default.error.log
-    memosig:
-      - /var/log/memosig/current
-    unicorn:
-      - /var/log/unicorn/current
+      - /usr/local/var/log/elasticsearch.log
   legacy_supported: yes
+test: *development
+staging: *development
+production: *development
