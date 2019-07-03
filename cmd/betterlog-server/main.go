@@ -56,6 +56,10 @@ func main() {
 		log.Fatal(err)
 	}
 	e := echo.New()
+
+	if !config.SSL {
+		e.Use(betterlog.Health{}.ZPage)
+	}
 	if config.HTTP_AUTH != "" {
 		fmt.Println("info: Configuring HTTP Auth access control")
 		e.Use(middleware.BasicAuthWithConfig(basicAuthConfig(config)))
