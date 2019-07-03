@@ -1,4 +1,4 @@
-package bime
+package betterlog
 
 import (
 	"fmt"
