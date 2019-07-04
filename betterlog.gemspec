@@ -1,19 +1,19 @@
 # -*- encoding: utf-8 -*-
-# stub: betterlog 0.2.1 ruby lib
+# stub: betterlog 0.2.2 ruby lib
 
 Gem::Specification.new do |s|
   s.name = "betterlog".freeze
-  s.version = "0.2.1"
+  s.version = "0.2.2"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0".freeze) if s.respond_to? :required_rubygems_version=
   s.require_paths = ["lib".freeze]
   s.authors = ["betterplace Developers".freeze]
-  s.date = "2019-06-27"
+  s.date = "2019-07-04"
   s.description = "This library provides structure json logging for our rails projects".freeze
   s.email = "developers@betterplace.org".freeze
   s.executables = ["betterlog".freeze, "betterlog_pusher".freeze]
   s.extra_rdoc_files = ["README.md".freeze, "lib/betterlog.rb".freeze, "lib/betterlog/global_metadata.rb".freeze, "lib/betterlog/log.rb".freeze, "lib/betterlog/log/event.rb".freeze, "lib/betterlog/log/event_formatter.rb".freeze, "lib/betterlog/log/severity.rb".freeze, "lib/betterlog/log_event_formatter.rb".freeze, "lib/betterlog/logger.rb".freeze, "lib/betterlog/notifiers.rb".freeze, "lib/betterlog/railtie.rb".freeze, "lib/betterlog/version.rb".freeze]
-  s.files = [".gitignore".freeze, ".travis.yml".freeze, "Dockerfile".freeze, "Gemfile".freeze, "LICENSE".freeze, "Makefile".freeze, "README.md".freeze, "Rakefile".freeze, "TODO.md".freeze, "VERSION".freeze, "betterlog.gemspec".freeze, "betterlog/healthz.go".freeze, "bin/betterlog".freeze, "bin/betterlog_pusher".freeze, "cmd/betterlog-server/LICENSE".freeze, "cmd/betterlog-server/main.go".freeze, "config/log.yml".freeze, "lib/betterlog.rb".freeze, "lib/betterlog/global_metadata.rb".freeze, "lib/betterlog/log.rb".freeze, "lib/betterlog/log/event.rb".freeze, "lib/betterlog/log/event_formatter.rb".freeze, "lib/betterlog/log/severity.rb".freeze, "lib/betterlog/log_event_formatter.rb".freeze, "lib/betterlog/logger.rb".freeze, "lib/betterlog/notifiers.rb".freeze, "lib/betterlog/railtie.rb".freeze, "lib/betterlog/version.rb".freeze, "spec/betterlog/global_metadata_spec.rb".freeze, "spec/betterlog/log_spec.rb".freeze, "spec/betterlog/logger_spec.rb".freeze, "spec/spec_helper.rb".freeze]
+  s.files = [".gitignore".freeze, ".travis.yml".freeze, "Dockerfile".freeze, "Gemfile".freeze, "LICENSE".freeze, "Makefile".freeze, "README.md".freeze, "Rakefile".freeze, "TODO.md".freeze, "VERSION".freeze, "betterlog.gemspec".freeze, "betterlog/config.go".freeze, "betterlog/healthz.go".freeze, "betterlog/redis_cert_cache.go".freeze, "bin/betterlog".freeze, "bin/betterlog_pusher".freeze, "cmd/betterlog-server/LICENSE".freeze, "cmd/betterlog-server/main.go".freeze, "config/log.yml".freeze, "lib/betterlog.rb".freeze, "lib/betterlog/global_metadata.rb".freeze, "lib/betterlog/log.rb".freeze, "lib/betterlog/log/event.rb".freeze, "lib/betterlog/log/event_formatter.rb".freeze, "lib/betterlog/log/severity.rb".freeze, "lib/betterlog/log_event_formatter.rb".freeze, "lib/betterlog/logger.rb".freeze, "lib/betterlog/notifiers.rb".freeze, "lib/betterlog/railtie.rb".freeze, "lib/betterlog/version.rb".freeze, "spec/betterlog/global_metadata_spec.rb".freeze, "spec/betterlog/log_spec.rb".freeze, "spec/betterlog/logger_spec.rb".freeze, "spec/spec_helper.rb".freeze]
   s.homepage = "http://github.com/betterplace/betterlog".freeze
   s.rdoc_options = ["--title".freeze, "Betterlog".freeze, "--main".freeze, "README.md".freeze]
   s.rubygems_version = "3.0.3".freeze
