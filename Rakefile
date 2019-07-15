@@ -16,7 +16,7 @@ GemHadar do
     'gospace'
   readme      'README.md'
   title       "#{name.camelize}"
-  executables ["betterlog", "betterlog_pusher"]
+  executables %w[ betterlog betterlog_pusher betterlog_sink ]
 
   dependency 'tins',           '~>1.3', '>=1.3.5'
   dependency 'complex_config'
