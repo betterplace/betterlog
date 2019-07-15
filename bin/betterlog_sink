@@ -1,0 +1,47 @@
+#!/usr/bin/env ruby
+# vim: set ft=ruby et sw=2 ts=2:
+
+require 'betterlog'
+require 'complex_config/rude'
+require 'json'
+
+LOG_ENV = ENV.fetch('LOG_ENV', 'production')
+
+ENV['KUBECONFIG'] = File.join(
+  ENV.fetch('HOME'),
+  '.kube',
+  "betterlog-#{LOG_ENV}"
+)
+
+@config = complex_config.log(LOG_ENV).sink
+
+def authenticate
+  return if File.exist?(ENV['KUBECONFIG'])
+  context =  [
+    'gke',
+    @config.cluster.project,
+    @config.cluster.zone,
+    @config.cluster.name,
+  ] * ?_
+  system(%{
+    gcloud --no-user-output-enabled container clusters get-credentials \
+    #{@config.cluster.name.inspect} \
+    --zone #{@config.cluster.zone.inspect} \
+    --project #{@config.cluster.project.inspect}
+  }) or fail "failed to authenticate for context #{context.inspect}"
+end
+
+authenticate
+
+pods = JSON(
+  %x{ kubectl -n #{@config.namespace} -ojson get pods },
+  object_class: JSON::GenericObject
+)
+
+if pod = pods.items.find { |i| i.metadata.labels.app == @config.source }
+  system %{
+    kubectl logs -n #{@config.namespace} #{ARGV.join(' ')} #{pod.metadata.name}
+  }
+else
+  exit 1
+end
