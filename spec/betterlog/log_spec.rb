@@ -154,7 +154,7 @@ describe Betterlog::Log do
 
     class MyEx < StandardError
       def backtrace
-        []
+        %w[ backtrace ]
       end
     end
 
@@ -162,18 +162,19 @@ describe Betterlog::Log do
       expected_event = Log::Event.new(
         metric:      'foo',
         type:        'seconds',
-        value:       10.0,
-        timestamp:   "2011-11-11T10:11:21.000Z",
-        message:     'MyEx: we were fucked while measuring metric foo',
+        value:       3.0,
+        timestamp:   "2011-11-11T10:11:14.000Z",
+        message:     '"MyEx: we were fucked" while measuring metric foo',
         error_class: 'MyEx',
-        backtrace:   [],
+        backtrace:   %w[ backtrace ]
       )
       expect(instance).to receive(:emit).with(expected_event)
       raised = false
       begin
         Log.measure(metric: 'foo') do
-          Time.dummy = Time.now + 10
+          Time.dummy = Time.now + 3
           raise MyEx, "we were fucked"
+          Time.dummy = Time.now + 7
         end
       rescue MyEx
         raised = true

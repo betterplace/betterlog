@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = Gem::Requirement.new(">= 0".freeze) if s.respond_to? :required_rubygems_version=
   s.require_paths = ["lib".freeze]
   s.authors = ["betterplace Developers".freeze]
-  s.date = "2019-07-15"
+  s.date = "2019-07-16"
   s.description = "This library provides structure json logging for our rails projects".freeze
   s.email = "developers@betterplace.org".freeze
   s.executables = ["betterlog".freeze, "betterlog_pusher".freeze, "betterlog_sink".freeze]

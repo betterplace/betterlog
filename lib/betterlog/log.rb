@@ -113,7 +113,7 @@ module Betterlog
     rescue => error
       e = Log::Event.ify(error)
       rest |= e.as_hash.subhash(:error_class, :backtrace, :message)
-      rest[:message] = "#{rest[:message]} while measuring metric #{metric}"
+      rest[:message] = "#{rest[:message].inspect} while measuring metric #{metric}"
       raise error
     ensure
       protect do
