@@ -2,7 +2,16 @@
 
 ## Description
 
-Logging tools for betterplace structured logging
+Logging tools for betterplace structured logging in rails applications.
+
+## Configuration
+
+Copy the example configuration in config/log.yml into your application to get
+you started. Then add this line to your Gemfile:
+
+```
+gem 'betterlog'
+```
 
 ## Usage
 
