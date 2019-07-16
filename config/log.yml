@@ -13,6 +13,7 @@ development: &development
     default: &default_format >
       {%lt%timestamp} {%5s%severity}
       "{%0.<%= ENV.fetch('COLUMNS', 80).to_i / 2 %>%message}"
+      {host}
       {location}
       {file}{-%O%backtrace}{-%O%meta}
     d: *default_format
@@ -23,6 +24,7 @@ development: &development
       metric: {metric} {value} {type}
       error_class: {error_class}
       backtrace: {%O%backtrace}
+      host: {host}
       location: {location}
       file: {file}
       meta: {%O%meta}\n
@@ -43,5 +45,21 @@ development: &development
       - /usr/local/var/log/elasticsearch.log
   legacy_supported: yes
 test: *development
-staging: *development
-production: *development
+staging:
+  <<: *development
+  sink:
+    namespace: betterlog
+    source: betterlog-app
+    cluster:
+      name: betterlog
+      zone: europe-west1-b
+      project: project-42
+production:
+  <<: *development
+  sink:
+    namespace: betterlog
+    source: betterlog-app
+    cluster:
+      name: betterlog
+      zone: europe-west1-b
+      project: project-666
