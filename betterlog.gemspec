@@ -1,14 +1,14 @@
 # -*- encoding: utf-8 -*-
-# stub: betterlog 0.3.0 ruby lib
+# stub: betterlog 0.4.0 ruby lib
 
 Gem::Specification.new do |s|
   s.name = "betterlog".freeze
-  s.version = "0.3.0"
+  s.version = "0.4.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0".freeze) if s.respond_to? :required_rubygems_version=
   s.require_paths = ["lib".freeze]
   s.authors = ["betterplace Developers".freeze]
-  s.date = "2019-07-16"
+  s.date = "2019-07-17"
   s.description = "This library provides structure json logging for our rails projects".freeze
   s.email = "developers@betterplace.org".freeze
   s.executables = ["betterlog".freeze, "betterlog_pusher".freeze, "betterlog_sink".freeze]
@@ -34,6 +34,7 @@ Gem::Specification.new do |s|
       s.add_runtime_dependency(%q<json>.freeze, ["~> 2.0"])
       s.add_runtime_dependency(%q<term-ansicolor>.freeze, ["~> 1.3"])
       s.add_runtime_dependency(%q<redis>.freeze, [">= 2.4"])
+      s.add_runtime_dependency(%q<redlock>.freeze, [">= 0"])
       s.add_runtime_dependency(%q<excon>.freeze, [">= 0"])
     else
       s.add_dependency(%q<gem_hadar>.freeze, ["~> 1.10.0"])
@@ -46,6 +47,7 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<json>.freeze, ["~> 2.0"])
       s.add_dependency(%q<term-ansicolor>.freeze, ["~> 1.3"])
       s.add_dependency(%q<redis>.freeze, [">= 2.4"])
+      s.add_dependency(%q<redlock>.freeze, [">= 0"])
       s.add_dependency(%q<excon>.freeze, [">= 0"])
     end
   else
@@ -59,6 +61,7 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<json>.freeze, ["~> 2.0"])
     s.add_dependency(%q<term-ansicolor>.freeze, ["~> 1.3"])
     s.add_dependency(%q<redis>.freeze, [">= 2.4"])
+    s.add_dependency(%q<redlock>.freeze, [">= 0"])
     s.add_dependency(%q<excon>.freeze, [">= 0"])
   end
 end

@@ -24,6 +24,7 @@ GemHadar do
   dependency 'json',           '~>2.0'
   dependency 'term-ansicolor', '~>1.3'
   dependency 'redis',          '>=2.4'
+  dependency 'redlock'
   dependency 'excon'
 
   development_dependency 'rake'
