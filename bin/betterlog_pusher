@@ -39,5 +39,4 @@ loop do
   end
 rescue Redlock::LockError => e
   STDERR.puts "Caught #{e.class}: #{e} => Retrying!"
-  exit
 end
