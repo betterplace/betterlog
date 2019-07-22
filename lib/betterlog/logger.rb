@@ -2,18 +2,29 @@ require 'redis'
 
 module Betterlog
   class Logger < ::Logger
-    def initialize(redis, shift_age = 0, shift_size = 1048576, name: nil, **opts)
-      @redis = redis
-      @name  = name || self.class.name
+    def initialize(redis, shift_age = 0, shift_size = 1048576, name: nil, buffer_size: nil, **opts)
+      @redis       = redis
+      @name        = name || self.class.name
+      @buffer_size = determine_buffer_size(buffer_size)
       super(@logdev, shift_age, shift_size, **opts)
     end
 
+    private def determine_buffer_size(buffer_size)
+      if buffer_size.nil? || buffer_size < 1 * 1024 ** 2
+        1 * 1024 ** 2 # Default to very small buffer
+      elsif buffer_size > 511 * 1024 ** 2
+        511 * 1024 ** 2 # Stay well below redis' 512Mb upper limit for strings
+      else
+        buffer_size
+      end
+    end
+
     private def redis_write(msg)
-      # Redis string limit is at 512MB, stop before that after warning a lot.
-      if @redis.strlen(@name) > 511 * 1024 ** 2
+      # Stop before reaching configured buffer_size limit, after warning a lot.
+      if @redis.strlen(@name) > (@buffer_size * 96) / 100
         return nil
       end
-      if @redis.strlen(@name) > 510 * 1024 ** 2
+      if @redis.strlen(@name) > (@buffer_size * 95) / 100
         @redis.append @name, "\nRedis memory limit will soon be reached =>"\
           " Log output to redis stops now unless log data is pushed away!\n"
         return nil
