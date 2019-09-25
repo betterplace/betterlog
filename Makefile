@@ -20,10 +20,7 @@ local: betterlog-server
 	REDIS_URL=$(REDIS_URL) ./betterlog-server
 
 fetch: fake-package
-	go get -u github.com/dgrijalva/jwt-go
-	go get -u github.com/labstack/echo
-	go get -u github.com/kelseyhightower/envconfig
-	go get -u github.com/go-redis/redis
+	go mod download
 
 fake-package:
 	rm -rf $(GOPATH)/src/github.com/betterplace/betterlog
