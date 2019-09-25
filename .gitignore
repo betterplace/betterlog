@@ -8,7 +8,9 @@
 .utilsrc
 .yardoc
 Gemfile.lock
+betterlog-server
 coverage
 errors.lst
+gospace
 pkg
 tags

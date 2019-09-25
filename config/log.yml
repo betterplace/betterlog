@@ -1,4 +1,4 @@
-default: &default
+development: &development
   styles:
     'timestamp': [ yellow, bold ]
     'file': [ blue, bold ]
@@ -13,6 +13,7 @@ default: &default
     default: &default_format >
       {%lt%timestamp} {%5s%severity}
       "{%0.<%= ENV.fetch('COLUMNS', 80).to_i / 2 %>%message}"
+      {host}
       {location}
       {file}{-%O%backtrace}{-%O%meta}
     d: *default_format
@@ -23,6 +24,7 @@ default: &default
       metric: {metric} {value} {type}
       error_class: {error_class}
       backtrace: {%O%backtrace}
+      host: {host}
       location: {location}
       file: {file}
       meta: {%O%meta}\n
@@ -32,9 +34,6 @@ default: &default
       {program}: {message}
     metric: >
       {%ft%timestamp} {metric} {value} {type}
-
-development:
-  <<: *default
   config_files:
     rails:
       - log/development.log
@@ -43,35 +42,24 @@ development:
     redis:
       - /usr/local/var/log/redis.log
     elasticsearch:
-      - /usr/local/var/log/elasticsearch@1.7.log
-    nginx:
-      - /usr/local/var/log/nginx/access.log
-      - /usr/local/var/log/nginx/error.log
-  legacy_supported: <%= ENV['LOG_LEGACY_SUPPORTED'].to_i == 1 %>
-
-test:
-  <<: *default
-  config_files:
-    test:
-      - log/test.log
-  legacy_supported: <%= ENV['LOG_LEGACY_SUPPORTED'].to_i == 1 %>
-
-production:
-  <<: *default
-  config_files:
-    rails:
-      - /var/apps/betterplace/current/log/production.log
-    cron:
-      - /var/apps/betterplace/current/log/cron.log
-    nginx:
-      - /var/apps/betterplace/current/log/nginx.assets.access.log
-      - /var/apps/betterplace/current/log/nginx.assets.error.log
-      - /var/apps/betterplace/current/log/nginx.betterplace.access.log
-      - /var/apps/betterplace/current/log/nginx.betterplace.error.log
-      - /var/apps/betterplace/current/log/nginx.default.access.log
-      - /var/apps/betterplace/current/log/nginx.default.error.log
-    memosig:
-      - /var/log/memosig/current
-    unicorn:
-      - /var/log/unicorn/current
+      - /usr/local/var/log/elasticsearch.log
   legacy_supported: yes
+test: *development
+staging:
+  <<: *development
+  sink:
+    namespace: betterlog
+    source: betterlog-app
+    cluster:
+      name: betterlog
+      zone: europe-west1-b
+      project: project-42
+production:
+  <<: *development
+  sink:
+    namespace: betterlog
+    source: betterlog-app
+    cluster:
+      name: betterlog
+      zone: europe-west1-b
+      project: project-666

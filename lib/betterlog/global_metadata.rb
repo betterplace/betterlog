@@ -3,21 +3,16 @@
 # thread-global, this will also attempt to update context of error reporting
 # tools etc.
 
-class GlobalMetadata
-  include Tins::SexySingleton
+module Betterlog
+  class GlobalMetadata
+    include Tins::SexySingleton
 
-  def data
-    Thread.current['BP_GLOBAL_METATDATA'] || {}
-  end
+    thread_local(:data) { {} }
 
-  def add(data_hash)
-    data = data_hash | data
-    Honeybadger.context(data_hash)
-  end
-
-  private
-
-  def data=(value)
-    Thread.current['BP_GLOBAL_METATDATA'] = value
+    def add(data_hash)
+      data = data_hash | data
+      Notifiers.context(data_hash)
+      self
+    end
   end
 end

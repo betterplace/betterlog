@@ -2,239 +2,240 @@
 # vim: set ft=ruby et sw=2 ts=2:
 
 require 'betterlog'
-require 'tins/go'
-require 'file-tail'
 require 'complex_config/rude'
 require 'zlib'
+require 'file/tail'
 
-class Betterlog
-  def initialize(args = ARGV.dup)
-    STDOUT.sync = true
-    @args = args
-    @opts = Tins::GO.go 'cfhp:e:s:S:n:F:', @args, defaults: { ?c => true, ?p => ?d }
-    filter_severities
-    @opts[?h] and usage
-  end
-
-  def usage
-    puts <<~end
-      Usage: #{prog} [OPTIONS] [LOGFILES]
-
-      Options are
-
-        -c            to enable colors during pretty printing
-        -f            to follow the log files
-        -h            to display this help
-        -p FORMAT     to pretty print the log file if possible
-        -e EMITTER    only output events from these emitters
-        -s MATCH      only display events matching this search string
-        -S SEVERITY   only output events with severity, e. g. -S '>=warn'
-        -n NUMBER     rewind this many lines backwards before tailing log file
-        -F SHORTCUT   to open the config files with SHORTCUT
-
-      FORMAT values are: #{Array(cc.log.formats?&.attribute_names) * ?,}
-
-      SEVERITY values are: #{Log::Severity.all * ?|}
-
-      Config file SHORTCUTs are: #{Array(cc.log.config_files?&.attribute_names) * ?,}
-
-      Note, that you can use multiple SHORTCUTs via "-F foo -F bar".
-
-      Examples:
-
-        - Follow rails log in long format with colors for errors or greater:
-
-          $ betterlog -f -F rails -p long -c -S ">=error"
-
-        - Follow rails AND redis logs with default format in colors
-          including the last 10 lines:
-
-          $ betterlog -f -F rails -F redis -pd -c -n 10
-
-        - Filter stdin from file unicorn.log with default format in color:
-
-          $ betterlog -pd -c <unicorn.log
-
-        - Filter the last 10 lines of file unicorn.log with default format
-          in color:
-
-          $ betterlog -c -pd -n 10 unicorn.log
-
-        - Filter the last 10 lines of file unicorn.log as JSON events:
-
-          $ betterlog -n 10 unicorn.log
-
+module Betterlog
+  class App
+    def initialize(args = ARGV.dup)
+      STDOUT.sync = true
+      @args = args
+      @opts = Tins::GO.go 'cfhp:e:s:S:n:F:', @args, defaults: { ?c => true, ?p => ?d }
+      filter_severities
+      @opts[?h] and usage
     end
-    exit(0)
-  end
 
-  private\
-  def filter_severities
-    @severities = Log::Severity.all
-    if severity = @opts[?S]
-      severity.each do |s|
-        if s =~ /\A(>=?|<=?)(.+)/
-          gs = Log::Severity.new($2)
-          @severities.select! { |x| x.send($1, gs) }
-        else
-          gs = Log::Severity.new(s)
-          @severities.select! { |x| x == gs }
+    def usage
+      puts <<~end
+        Usage: #{prog} [OPTIONS] [LOGFILES]
+
+        Options are
+
+          -c            to enable colors during pretty printing
+          -f            to follow the log files
+          -h            to display this help
+          -p FORMAT     to pretty print the log file if possible
+          -e EMITTER    only output events from these emitters
+          -s MATCH      only display events matching this search string
+          -S SEVERITY   only output events with severity, e. g. -S '>=warn'
+          -n NUMBER     rewind this many lines backwards before tailing log file
+          -F SHORTCUT   to open the config files with SHORTCUT
+
+        FORMAT values are: #{Array(cc.log.formats?&.attribute_names) * ?,}
+
+        SEVERITY values are: #{Log::Severity.all * ?|}
+
+        Config file SHORTCUTs are: #{Array(cc.log.config_files?&.attribute_names) * ?,}
+
+        Note, that you can use multiple SHORTCUTs via "-F foo -F bar".
+
+        Examples:
+
+          - Follow rails log in long format with colors for errors or greater:
+
+            $ betterlog -f -F rails -p long -c -S ">=error"
+
+          - Follow rails AND redis logs with default format in colors
+            including the last 10 lines:
+
+            $ betterlog -f -F rails -F redis -pd -c -n 10
+
+          - Filter stdin from file unicorn.log with default format in color:
+
+            $ betterlog -pd -c <unicorn.log
+
+          - Filter the last 10 lines of file unicorn.log with default format
+            in color:
+
+            $ betterlog -c -pd -n 10 unicorn.log
+
+          - Filter the last 10 lines of file unicorn.log as JSON events:
+
+            $ betterlog -n 10 unicorn.log
+
+      end
+      exit(0)
+    end
+
+    private\
+    def filter_severities
+      @severities = Log::Severity.all
+      if severity = @opts[?S]
+        severity.each do |s|
+          if s =~ /\A(>=?|<=?)(.+)/
+            gs = Log::Severity.new($2)
+            @severities.select! { |x| x.send($1, gs) }
+          else
+            gs = Log::Severity.new(s)
+            @severities.select! { |x| x == gs }
+          end
         end
       end
     end
-  end
 
-  def prog
-    File.basename($0)
-  end
-
-  def emitters
-    Array(@opts[?e])
-  end
-
-  def search_matched?(event)
-    case @opts[?s]
-    when /:\?\z/
-      event[$`].present?
-    when /:([^:]+)\z/
-      event[$`].full?(:include?, $1)
-    when String
-      event.to_json.include?(@opts[?s])
-    else
-      return true
+    def prog
+      File.basename($0)
     end
-  end
 
-  def output_log_event(prefix, event)
-    return unless @severities.include?(event.severity)
-    return if emitters.full? && !emitters.include?(event.emitter)
-    search_matched?(event) or return
-    if format = @opts[?p]
-      puts event.format(pretty: :format, color: @opts[?c], format: format)
-    else
-      puts "#{prefix}#{event}"
+    def emitters
+      Array(@opts[?e])
     end
-  end
 
-  def output_log_line(l, filename)
-    l.blank? and return
-    prefix =
-      if filename && @args.size > 1
-        "#{filename}: "
+    def search_matched?(event)
+      case @opts[?s]
+      when /:\?\z/
+        event[$`].present?
+      when /:([^:]+)\z/
+        event[$`].full?(:include?, $1)
+      when String
+        event.to_json.include?(@opts[?s])
+      else
+        return true
       end
-    if event = Log::Event.parse(l)
-      filename and event[:file] = filename
-      output_log_event(prefix, event)
-    elsif l =~ /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3})\d* (.*)/
-      event = Log::Event.new(
-        timestamp: $1,
-        message:   Term::ANSIColor.uncolor($2),
-        type:      'isoprefix',
-      )
-      filename and event[:file] = filename
-      output_log_event(prefix, event)
-    else
+    end
+
+    def output_log_event(prefix, event)
+      return unless @severities.include?(event.severity)
+      return if emitters.full? && !emitters.include?(event.emitter)
+      search_matched?(event) or return
+      if format = @opts[?p]
+        puts event.format(pretty: :format, color: @opts[?c], format: format)
+      else
+        puts "#{prefix}#{event}"
+      end
+    end
+
+    def output_log_line(l, filename)
+      l.blank? and return
+      prefix =
+        if filename && @args.size > 1
+          "#{filename}: "
+        end
+      if event = Log::Event.parse(l)
+        filename and event[:file] = filename
+        output_log_event(prefix, event)
+      elsif l =~ /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3})\d* (.*)/
+        event = Log::Event.new(
+          timestamp: $1,
+          message:   Term::ANSIColor.uncolor($2),
+          type:      'isoprefix',
+        )
+        filename and event[:file] = filename
+        output_log_event(prefix, event)
+      else
+        @opts[?e] or puts "#{prefix}#{l}"
+      end
+    rescue
       @opts[?e] or puts "#{prefix}#{l}"
     end
-  rescue
-    @opts[?e] or puts "#{prefix}#{l}"
-  end
 
-  def query_config_file_configuration
-    if @opts[?F]
-      if cfs = cc.log.config_files?
-        @opts[?F].each do |f|
-          @args.concat cfs[f]
+    def query_config_file_configuration
+      if @opts[?F]
+        if cfs = cc.log.config_files?
+          @opts[?F].each do |f|
+            @args.concat cfs[f]
+          end
+        else
+          fail "no config files for #{@opts[?F]} defined"
         end
       else
-        fail "no config files for #{@opts[?F]} defined"
+        if @args.empty? and r = cc.log.config_files?&.rails?
+          @args.concat r
+        end
+        if @args.empty?
+          fail "filenames to follow needed"
+        end
       end
-    else
-      if @args.empty? and r = cc.log.config_files?&.rails?
-        @args.concat r
+      @args.uniq!
+    end
+
+    def follow_files
+      group = File::Tail::Group.new
+      @args.each do |f|
+        if File.exist?(f)
+          group.add_filename f, @opts[?n].to_i
+        else
+          STDERR.puts "file #{f.inspect} does not exist, skip it!"
+        end
       end
+      group.each_file { |f| f.max_interval = 1 }
+      t = Thread.new do
+        group.tail { |l| output_log_line(l, l.file.path) }
+      end
+      t.join
+    rescue Interrupt
+    end
+
+    def filter_argv
+      for fn in @args
+        unless File.exist?(fn)
+          STDERR.puts "file #{fn.inspect} does not exist, skip it!"
+          next
+        end
+        if fn.end_with?('.gz')
+          Zlib::GzipReader.open(fn) do |f|
+            f.extend(File::Tail)
+            f.each_line do |l|
+              output_log_line(l, fn)
+            end
+          end
+        else
+          File::Tail::Logfile.open(fn, backward: @opts[?n].to_i) do |f|
+            f.each_line do |l|
+              output_log_line(l, fn)
+            end
+          end
+        end
+      end
+    end
+
+    def filter_stdin
+      STDIN.each_line do |l|
+        output_log_line(l, nil)
+      end
+    end
+
+    def output_log_sources
       if @args.empty?
-        fail "filenames to follow needed"
-      end
-    end
-    @args.uniq!
-  end
-
-  def follow_files
-    group = File::Tail::Group.new
-    @args.each do |f|
-      if File.exist?(f)
-        group.add_filename f, @opts[?n].to_i
+        STDERR.puts "#{prog} tracking stdin\nseverities: #{@severities * ?|}"
       else
-        STDERR.puts "file #{f.inspect} does not exist, skip it!"
+        STDERR.puts "#{prog} tracking files:\n"\
+          "#{@args.map { |a| '  ' + a.inspect }.join(' ')}\n"\
+          "severities: #{@severities * ?|}\n"
       end
     end
-    group.each_file { |f| f.max_interval = 1 }
-    t = Thread.new do
-      group.tail { |l| output_log_line(l, l.file.path) }
-    end
-    t.join
-  rescue Interrupt
-  end
 
-  def filter_argv
-    for fn in @args
-      unless File.exist?(fn)
-        STDERR.puts "file #{fn.inspect} does not exist, skip it!"
-        next
-      end
-      if fn.end_with?('.gz')
-        Zlib::GzipReader.open(fn) do |f|
-          f.extend(File::Tail)
-          f.each_line do |l|
-            output_log_line(l, fn)
-          end
-        end
+    def run
+      if @opts[?f]
+        query_config_file_configuration
+        output_log_sources
+        follow_files
+      elsif @opts[?F] && @args.empty?
+        query_config_file_configuration
+        output_log_sources
+        filter_argv
+      elsif !@args.empty?
+        output_log_sources
+        filter_argv
       else
-        File::Tail::Logfile.open(fn, backward: @opts[?n].to_i) do |f|
-          f.each_line do |l|
-            output_log_line(l, fn)
-          end
-        end
+        output_log_sources
+        filter_stdin
       end
-    end
-  end
-
-  def filter_stdin
-    STDIN.each_line do |l|
-      output_log_line(l, nil)
-    end
-  end
-
-  def output_log_sources
-    if @args.empty?
-      STDERR.puts "#{prog} tracking stdin\nseverities: #{@severities * ?|}"
-    else
-      STDERR.puts "#{prog} tracking files:\n"\
-        "#{@args.map { |a| '  ' + a.inspect }.join(' ')}\n"\
-        "severities: #{@severities * ?|}\n"
-    end
-  end
-
-  def run
-    if @opts[?f]
-      query_config_file_configuration
-      output_log_sources
-      follow_files
-    elsif @opts[?F] && @args.empty?
-      query_config_file_configuration
-      output_log_sources
-      filter_argv
-    elsif !@args.empty?
-      output_log_sources
-      filter_argv
-    else
-      output_log_sources
-      filter_stdin
     end
   end
 end
 
 if File.basename($0) == File.basename(__FILE__)
-  Betterlog.new(ARGV).run
+  Betterlog::App.new(ARGV).run
 end
