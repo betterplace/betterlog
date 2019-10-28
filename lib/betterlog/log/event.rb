@@ -80,6 +80,8 @@ module Betterlog
         ]
 
         def perform(object)
+          return object if IN_JSON === object
+
           if @seen.key?(object.__id__)
             :circular
           else
@@ -89,8 +91,6 @@ module Betterlog
               h.each_with_object({}) { |(k, v), h| h[k.to_s.to_sym] = perform(v) }
             when a = object.ask_and_send(:to_ary)
               a.map { |o| perform(o) }
-            when IN_JSON === object
-              object
             else
               object.to_s
             end
