@@ -57,7 +57,7 @@ module Betterlog
       end
 
       def initialize(data = {})
-        data = data.symbolize_keys_recursive | meta
+        data = data.symbolize_keys_recursive(circular: :circular) | meta
         unless data.key?(:message)
           data[:message] = "a #{data[:type]} type log message of severity #{data[:severity]}"
         end
@@ -70,36 +70,8 @@ module Betterlog
         @data = Hash[data.sort_by(&:first)]
       end
 
-      class BreakCircles
-        def initialize
-          @seen   = {}
-        end
-
-        IN_JSON = Tins::ModuleGroup[
-          Float, Integer, NilClass, FalseClass, TrueClass
-        ]
-
-        def perform(object)
-          return object if IN_JSON === object
-
-          if @seen.key?(object.__id__)
-            :circular
-          else
-            @seen[object.__id__] = true
-            case
-            when h = object.ask_and_send(:to_hash)
-              h.each_with_object({}) { |(k, v), h| h[k.to_s.to_sym] = perform(v) }
-            when a = object.ask_and_send(:to_ary)
-              a.map { |o| perform(o) }
-            else
-              object.to_s
-            end
-          end
-        end
-      end
-
       def as_hash(*a)
-        BreakCircles.new.perform(@data)
+        @data
       end
 
       def to_json(*a)

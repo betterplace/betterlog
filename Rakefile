@@ -18,7 +18,7 @@ GemHadar do
   title       "#{name.camelize}"
   executables %w[ betterlog betterlog_pusher betterlog_sink ]
 
-  dependency 'tins',           '~>1.3', '>=1.3.5'
+  dependency 'tins',           '~>1.3', '>=1.22.0'
   dependency 'complex_config'
   dependency 'file-tail',      '~>1.0'
   dependency 'json',           '~>2.0'
