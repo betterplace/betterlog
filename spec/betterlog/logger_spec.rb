@@ -5,6 +5,21 @@ describe Betterlog::Logger do
     described_class.new(Redis.new)
   end
 
+  describe '.for_redis_url' do
+    it 'can handle not being able to connect to redis' do
+      redis = double
+      allow(redis).to receive(:ping).and_raise Redis::CannotConnectError
+      allow(Redis).to receive(:new).with(url: 'the_url').and_return redis
+      expect(Betterlog::Logger.for_redis_url('the_url')).to be_nil
+    end
+
+    it 'can connect to redis for the url' do
+      redis = double(ping: 'PONG')
+      allow(Redis).to receive(:new).with(url: 'the_url').and_return redis
+      expect(Betterlog::Logger.for_redis_url('the_url')).to be_a Betterlog::Logger
+    end
+  end
+
   describe '#<<' do
     it 'writes to redis' do
       expect(logger.instance_variable_get(:@redis)).to receive(:append).

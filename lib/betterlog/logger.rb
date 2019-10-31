@@ -6,7 +6,14 @@ module Betterlog
       @redis       = redis
       @name        = name || self.class.name
       @buffer_size = determine_buffer_size(buffer_size)
-      super(@logdev, shift_age, shift_size, **opts)
+      super(nil, shift_age, shift_size, **opts)
+    end
+
+    def self.for_redis_url(url, shift_age = 0, shift_size = 1048576,  **opts)
+      redis = Redis.new(url: url)
+      redis.ping
+      new(redis, shift_age, shift_size, **opts)
+    rescue Redis::CannotConnectError
     end
 
     private def determine_buffer_size(buffer_size)

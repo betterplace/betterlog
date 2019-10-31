@@ -15,8 +15,11 @@ describe Betterlog::Log::Event do
     end
 
     it 'does not replace repeated scalar objects with "circular"' do
-      event = Betterlog::Log::Event.new(array: [true, false, nil, 23, 3.14])
-      expect(event.to_json).to include('"array":[true,false,null,23,3.14],')
+      ary = [true, false, nil, 23, 3.14]
+      event = Betterlog::Log::Event.new(ary: ary << ary.dup)
+      expect(event.to_json).to include(<<~end.strip)
+        "ary":[true,false,null,23,3.14,[true,false,null,23,3.14]]
+      end
     end
   end
 end
