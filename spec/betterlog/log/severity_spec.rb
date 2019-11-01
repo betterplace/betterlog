@@ -2,8 +2,8 @@ require 'spec_helper'
 
 describe Betterlog::Log::Severity do
   it 'has all constants' do
-    expect(described_class.all.map(&:to_sym).sort).to\
-      eq %i[ WARN ERROR FATAL UNKNOWN DEBUG INFO ].sort
+    expect(described_class.all.map(&:to_s).sort).to\
+      eq %w[ WARN ERROR FATAL UNKNOWN DEBUG INFO ].sort
   end
 
   it 'resolves unknown severities to UNKNOWN' do
@@ -20,7 +20,7 @@ describe Betterlog::Log::Severity do
     end
 
     it 'can be converted to symbol' do
-      expect(subject.to_sym).to eq :ERROR
+      expect(subject.to_sym).to eq :error
     end
 
     it 'can be converted to string' do
@@ -32,7 +32,7 @@ describe Betterlog::Log::Severity do
     end
 
     it 'can be converted via as_json' do
-      expect(subject.as_json).to eq :ERROR
+      expect(subject.as_json).to eq 'ERROR'
     end
 
     it 'can be compared by level' do
@@ -44,7 +44,7 @@ describe Betterlog::Log::Severity do
     end
 
     it 'implements hash depending on name symbol' do
-      expect(subject.hash).to eq :ERROR.hash
+      expect(subject.hash).to eq :error.hash
     end
   end
 end

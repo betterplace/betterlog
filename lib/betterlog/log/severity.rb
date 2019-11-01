@@ -17,12 +17,11 @@ module Betterlog
 
       def initialize(name)
         name = name.to_sym if self.class === name
-        name = name.to_s.upcase.to_sym
-        @name = name
+        @name = name.to_s.downcase.to_sym
         begin
-          @level = self.class.const_get(@name)
+          @level = self.class.const_get(@name.to_s.upcase)
         rescue NameError
-          @name  = :UNKNOWN
+          @name  = :unknown
           @level = UNKNOWN
         end
       end
@@ -44,7 +43,7 @@ module Betterlog
       end
 
       def as_json(*)
-        to_sym
+        to_s
       end
 
       def <=>(other)
