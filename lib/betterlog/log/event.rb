@@ -71,7 +71,7 @@ module Betterlog
       end
 
       def as_hash(*a)
-        @data
+        @data.dup
       end
 
       def to_json(*a)
