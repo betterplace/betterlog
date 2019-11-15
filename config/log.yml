@@ -21,7 +21,7 @@ development: &development
       timestamp: {%lt%timestamp}
       severity: {severity}
       message: "{message}"
-      metric: {metric} {value} {type}
+      metric: {metric} {value}
       error_class: {error_class}
       backtrace: {%O%backtrace}
       host: {host}
@@ -33,7 +33,7 @@ development: &development
       {%0.1s%severity} [{%lt%timestamp} #{%d%pid}] {%5s%severity} --
       {program}: {message}
     metric: >
-      {%ft%timestamp} {metric} {value} {type}
+      {%ft%timestamp} {metric} {value}
   config_files:
     rails:
       - log/development.log

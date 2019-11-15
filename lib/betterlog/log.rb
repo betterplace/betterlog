@@ -83,19 +83,18 @@ module Betterlog
     end
 
     # Logs a metric on severity debug, by default, this can be changed by passing
-    # the severity: keyword. +name+ is for example 'Donation' and +type+
-    # 'Confirmation', and +value+ can be any value, but has to be somewhat
-    # consistent in terms of structure with +name/type+ to allow for correct
+    # the severity: keyword. +name+ is for example 'Donation.Confirmation' and
+    # +value+ can be any value, but has to be somewhat consistent in terms of
+    # structure with +name+ to allow for correct
     # evaluation.
     #
     # @param name the name of the recorded metric.
-    # @param type of the recorded metric.
     # @param value of the recorded metric.
     # @param **rest additional rest is logged as well.
     # @return [ Log ] this object itself.
-    def metric(name:, type:, value:, **rest)
+    def metric(name:, value:, **rest)
       protect do
-        event = build_metric(name: name, type: type, value: value, **rest)
+        event = build_metric(name: name, value: value, **rest)
         emit event
       end
     end
@@ -120,7 +119,7 @@ module Betterlog
       raise error
     ensure
       protect do
-        event = build_metric(name: name, type: 'duration', value: timed_duration, **rest)
+        event = build_metric(name: name, value: timed_duration, **rest)
         emit event
       end
     end
@@ -152,16 +151,16 @@ module Betterlog
       self
     end
 
-    def build_metric(name:, type:, value:, **rest)
-      severity = rest.fetch(:severity, :debug)
+    def build_metric(name:, value:, **rest)
+      severity = rest.fetch(:severity, :info)
       rest |= {
-        message: "a metric #{name} of type #{type}",
+        message: "a metric #{name}=#{value}",
       }
       Log::Event.ify(
         {
-          name: name,
-          type: type,
+          name:  name,
           value: value,
+          type: 'metric'
         } | rest,
         severity: severity
       )
