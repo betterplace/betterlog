@@ -140,14 +140,14 @@ describe Betterlog::Log do
 
     it 'can be sent after measuring times' do
       expected_event = Log::Event.new(
-        message: 'a metric foo of type seconds',
-        metric:    'foo',
-        type:      'seconds',
+        message: 'a metric foo of type duration',
+        name:    'foo',
+        type:      'duration',
         value:     10.0,
         timestamp: "2011-11-11T10:11:21.000Z"
       )
       expect(instance).to receive(:emit).with(expected_event)
-      Log.measure(metric: 'foo') do
+      Log.measure(name: 'foo') do
         Time.dummy = Time.now + 10
       end
     end
@@ -160,8 +160,8 @@ describe Betterlog::Log do
 
     it 'adds exception information if block raises' do
       expected_event = Log::Event.new(
-        metric:      'foo',
-        type:        'seconds',
+        name:      'foo',
+        type:        'duration',
         value:       3.0,
         timestamp:   "2011-11-11T10:11:14.000Z",
         message:     '"MyEx: we were fucked" while measuring metric foo',
@@ -171,7 +171,7 @@ describe Betterlog::Log do
       expect(instance).to receive(:emit).with(expected_event)
       raised = false
       begin
-        Log.measure(metric: 'foo') do
+        Log.measure(name: 'foo') do
           Time.dummy = Time.now + 3
           raise MyEx, "we were fucked"
           Time.dummy = Time.now + 7
@@ -187,36 +187,36 @@ describe Betterlog::Log do
     it 'logs metrics with a specific structure on debug log level' do
       expected_event = Log::Event.new(
         message: 'a metric controller.action of type ms',
-        metric: 'controller.action',
+        name: 'controller.action',
         type: 'ms',
         value: 0.123,
       )
       expect(instance).to receive(:emit).with(expected_event)
-      Log.metric(metric: 'controller.action', type: 'ms', value: 0.123)
+      Log.metric(name: 'controller.action', type: 'ms', value: 0.123)
     end
 
     it 'logs metrics on a given log level' do
       expected_event = Log::Event.new(
         message: 'a metric controller.action of type ms',
-        metric: 'controller.action',
+        name: 'controller.action',
         type:   'ms',
         value:  0.123,
         severity: :info,
       )
       expect(instance).to receive(:emit).with(expected_event)
-      Log.metric(severity: :info, metric: 'controller.action', type: 'ms', value: 0.123)
+      Log.metric(severity: :info, name: 'controller.action', type: 'ms', value: 0.123)
     end
 
     it 'logs metrics with additional data' do
       expected_event = Log::Event.new(
         message: 'a metric controller.action of type ms',
         foo: 'bar',
-        metric: 'controller.action',
+        name: 'controller.action',
         type: 'ms',
         value: 0.123,
       )
       expect(instance).to receive(:emit).with(expected_event)
-      Log.metric(metric: 'controller.action', type: 'ms', value: 0.123, foo: 'bar')
+      Log.metric(name: 'controller.action', type: 'ms', value: 0.123, foo: 'bar')
     end
   end
 end

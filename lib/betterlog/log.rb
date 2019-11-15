@@ -12,7 +12,7 @@ module Betterlog
     self.default_logger = Logger.new(STDERR)
 
     def logger
-      defined?(Rails) && Rails.logger || self.class.default_logger
+      defined?(Rails) && Rails.respond_to?(:logger) ? Rails.logger : ::Logger.new(STDERR)
     end
 
     # Logs a message on severity info.
@@ -83,16 +83,19 @@ module Betterlog
     end
 
     # Logs a metric on severity debug, by default, this can be changed by passing
-    # the severity: keyword.
+    # the severity: keyword. +name+ is for example 'Donation' and +type+
+    # 'Confirmation', and +value+ can be any value, but has to be somewhat
+    # consistent in terms of structure with +name/type+ to allow for correct
+    # evaluation.
     #
-    # @param metric the name of the recorded metric.
+    # @param name the name of the recorded metric.
     # @param type of the recorded metric.
     # @param value of the recorded metric.
     # @param **rest additional rest is logged as well.
     # @return [ Log ] this object itself.
-    def metric(metric:, type:, value:, **rest)
+    def metric(name:, type:, value:, **rest)
       protect do
-        event = build_metric(metric: metric, type: type, value: value, **rest)
+        event = build_metric(name: name, type: type, value: value, **rest)
         emit event
       end
     end
@@ -103,21 +106,21 @@ module Betterlog
     # If an error occurs during measurement details about it are added to the
     # metric event.
     #
-    # @param metric the name of the recorded metric.
+    # @param name the name of the recorded metric.
     # @param **rest additional rest is logged as well.
     # @param block the block around which the measure is teaken.
     # @return [ Log ] this object itself.
-    def measure(metric:, **rest, &block)
+    def measure(name:, **rest, &block)
       raise ArgumentError, 'must be called with a block' unless block_given?
       time_block { yield }
     rescue => error
       e = Log::Event.ify(error)
       rest |= e.as_hash.subhash(:error_class, :backtrace, :message)
-      rest[:message] = "#{rest[:message].inspect} while measuring metric #{metric}"
+      rest[:message] = "#{rest[:message].inspect} while measuring metric #{name}"
       raise error
     ensure
       protect do
-        event = build_metric(metric: metric, type: 'seconds', value: timed_duration, **rest)
+        event = build_metric(name: name, type: 'duration', value: timed_duration, **rest)
         emit event
       end
     end
@@ -149,14 +152,14 @@ module Betterlog
       self
     end
 
-    def build_metric(metric:, type:, value:, **rest)
+    def build_metric(name:, type:, value:, **rest)
       severity = rest.fetch(:severity, :debug)
       rest |= {
-        message: "a metric #{metric} of type #{type}",
+        message: "a metric #{name} of type #{type}",
       }
       Log::Event.ify(
         {
-          metric: metric,
+          name: name,
           type: type,
           value: value,
         } | rest,
