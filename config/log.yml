@@ -15,7 +15,7 @@ development: &development
       "{%0.<%= ENV.fetch('COLUMNS', 80).to_i / 2 %>%message}"
       {host}
       {location}
-      {file}{-%O%backtrace}{-%O%meta}
+      {file}{-%O%error_class}{-%O%backtrace}{-%O%meta}
     d: *default_format
     long: &long_format |
       timestamp: {%lt%timestamp}
