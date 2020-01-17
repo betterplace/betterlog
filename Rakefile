@@ -23,7 +23,7 @@ GemHadar do
   dependency 'file-tail',      '~>1.0'
   dependency 'json',           '~>2.0'
   dependency 'term-ansicolor', '~>1.3'
-  dependency 'redis',          '>=2.4'
+  dependency 'redis',          '>=2.8'
   dependency 'redlock'
   dependency 'excon'
 

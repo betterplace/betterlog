@@ -10,7 +10,16 @@ lock_time = Integer(ENV.fetch('BETTERLOG_LOCK_TIME', 60_000))
 url       = ENV.fetch('BETTERLOG_SERVER_URL')
 name      = ENV['BETTERLOG_NAME']
 redis_url = ENV.fetch('REDIS_URL')
-redis     = Redis.new(url: redis_url)
+redis =
+  if redis_sentinels = ENV['REDIS_SENTINELS']&.split(?,)
+    redis_sentinels.map! { |s|
+      h, p = s.split(?:, 2)
+      { host: h, port: (p || 26379).to_i }
+    }
+    Redis.new(url: redis_url, sentinels: redis_sentinels, role: :master)
+  else
+    Redis.new(url: redis_url)
+  end
 lm        = Redlock::Client.new([ redis_url ])
 logger    = Betterlog::Logger.new(redis, name: name)
 
