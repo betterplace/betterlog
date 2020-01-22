@@ -26,12 +26,28 @@ describe Betterlog::Logger do
         with('Betterlog::Logger', 'foo')
       logger << 'foo'
     end
+
+    it 'falls back if redis errors' do
+      allow(logger.instance_variable_get(:@redis)).to receive(:append).
+        and_raise(Redis::BaseConnectionError)
+      expect(logger.instance_variable_get(:@fallback)).to\
+        receive(:<<).with('foo')
+      logger << 'foo'
+    end
   end
 
   describe '#add' do
     it 'writes to redis' do
       expect(logger.instance_variable_get(:@redis)).to receive(:append).
         with('Betterlog::Logger', /INFO -- : foo/)
+      logger.info 'foo'
+    end
+
+    it 'falls back if redis errors' do
+      allow(logger.instance_variable_get(:@redis)).to receive(:append).
+        and_raise(Redis::BaseConnectionError)
+      expect(logger.instance_variable_get(:@fallback)).to\
+        receive(:add).with(::Logger::INFO, 'foo', nil)
       logger.info 'foo'
     end
   end

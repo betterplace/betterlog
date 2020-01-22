@@ -4,6 +4,7 @@ module Betterlog
   class Logger < ::Logger
     def initialize(redis, shift_age = 0, shift_size = 1048576, name: nil, buffer_size: nil, **opts)
       @redis       = redis
+      @fallback    = ::Logger.new(STDERR)
       @name        = name || self.class.name
       @buffer_size = determine_buffer_size(buffer_size)
       super(nil, shift_age, shift_size, **opts)
@@ -29,11 +30,8 @@ module Betterlog
     private def redis_write(msg)
       # Stop before reaching configured buffer_size limit, after warning a lot.
       if @redis.strlen(@name) > (@buffer_size * 96) / 100
-        return nil
-      end
-      if @redis.strlen(@name) > (@buffer_size * 95) / 100
-        @redis.append @name, "\nRedis memory limit will soon be reached =>"\
-          " Log output to redis stops now unless log data is pushed away!\n"
+        @fallback.add(ERROR, "Redis memory limit will soon be reached =>"\
+          " Log output to redis stops now unless log data is pushed away!")
         return nil
       end
       @redis.append @name, msg
@@ -60,10 +58,14 @@ module Betterlog
       redis_write(
         format_message(format_severity(severity), Time.now, progname, message))
       true
+    rescue Redis::BaseConnectionError
+      @fallback.add(severity, message, progname)
     end
 
     def <<(msg)
       redis_write(msg)
+    rescue Redis::BaseConnectionError
+      @fallback << msg
     end
 
     def clear
