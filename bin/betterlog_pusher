@@ -32,7 +32,7 @@ loop do
   lm.lock!(File.basename($0), lock_time) do
     print ?…
     logger.each_slice(lines).with_index do |batch, i|
-      count.zero? and print ?(
+      count.zero? and print ?○
       count += batch.sum(&:size)
       attempt(attempts: 10, sleep: -60, reraise: true) do
         print ?┄
@@ -44,7 +44,7 @@ loop do
   if count.zero?
     sleep 1
   else
-    print "→%s)" % Tins::Unit.format(count, format: '%.2f %U', prefix: 1024, unit: ?b)
+    print "→ %s sent.\n" % Tins::Unit.format(count, format: '%.2f %U', prefix: 1024, unit: ?b)
   end
 rescue Redlock::LockError => e
   STDERR.puts "Caught #{e.class}: #{e} => Retrying!"
