@@ -58,7 +58,7 @@ describe Betterlog::Log do
 
   describe '#info with internal logging error' do
     it 'should not crash ever, just log the problem to Rails.logger' do
-      expect_any_instance_of(instance.logger.class).to receive(:fatal).and_call_original
+      expect_any_instance_of(instance.logger.class).to receive(:fatal)
       expect(Log.info(BasicObject.new)).to eq Log.instance
     end
   end
@@ -75,6 +75,10 @@ describe Betterlog::Log do
       example.run
     ensure
       Betterlog::Notifiers.notifiers.clear
+    end
+
+    before do
+      expect_any_instance_of(::Logger).to receive(:send).with(:info, any_args)
     end
 
     it 'can send explicit notifications' do
