@@ -30,7 +30,7 @@ module Betterlog
     private def redis_write(msg)
       # Stop before reaching configured buffer_size limit, after warning a lot.
       if @redis.strlen(@name) > (@buffer_size * 96) / 100
-        @fallback.add(ERROR, "Redis memory limit will soon be reached =>"\
+        @fallback.error("Redis memory limit will soon be reached =>"\
           " Log output to redis stops now unless log data is pushed away!")
         return nil
       end
@@ -75,18 +75,40 @@ module Betterlog
 
     def each_chunk(chunk_size: 100 * 1024, &block)
       chunk_size > 0 or raise ArgumentError, 'chunk_size > 0 required'
+
+      # Delete any remaining temporary keys if we were interrtupted earlier
+      # (or in some other process.)
+      @redis.scan_each(match: "#{@name}_*") do |key|
+        @redis.del key
+      rescue Redis::BaseConnectionError
+      end
+
       @redis.exists(@name) or return Enumerator.new {}
+
       Enumerator.new do |y|
         name_tmp = "#{@name}_#{rand}"
         @redis.rename @name, name_tmp
+
         s = 0
         e = @redis.strlen(name_tmp) - 1
         until s > e
           y.yield @redis.getrange(name_tmp, s, s + chunk_size - 1)
           s += chunk_size
         end
-        @redis.del name_tmp
+
+      ensure
+        begin
+          @redis.del name_tmp
+        rescue Redis::BaseConnectionError
+          # We have to delete this later if del command failed here,
+          # see the beginning of this method.
+        end
       end.each(&block)
+
+    rescue Redis::BaseConnectionError => e
+      # Maybe it works again later, just log the error…
+      @fallback.error(e)
+      Enumerator.new {}
     end
 
     def each(chunk_size: 100 * 1024, &block)
