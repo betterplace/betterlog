@@ -27,12 +27,12 @@ module Betterlog
           -h            to display this help
           -p FORMAT     to pretty print the log file if possible
           -e EMITTER    only output events from these emitters
-          -s MATCH      only display events matching this search string
+          -s MATCH      only display events matching this search string (can be repeated)
           -S SEVERITY   only output events with severity, e. g. -S '>=warn'
           -n NUMBER     rewind this many lines backwards before tailing log file
           -F SHORTCUT   to open the config files with SHORTCUT
 
-        FORMAT values are: #{Array(cc.log.formats?&.attribute_names) * ?,}
+        FORMAT values are: #{(Array(cc.log.formats?&.attribute_names) + %w[j json]) * ?,}
 
         SEVERITY values are: #{Log::Severity.all * ?|}
 
@@ -93,15 +93,18 @@ module Betterlog
     end
 
     def search_matched?(event)
-      case @opts[?s]
-      when /:\?\z/
-        event[$`].present?
-      when /:([^:]+)\z/
-        event[$`].full?(:include?, $1)
-      when String
-        event.to_json.include?(@opts[?s])
-      else
-        return true
+      return true unless @opts[?s]
+      @opts[?s].all? do |param|
+        case param
+        when /:\?\z/
+          event[$`].present?
+        when /:([^:]+)\z/
+          event[$`].full?(:include?, $1)
+        when String
+          event.to_json.include?(@opts[?s])
+        else
+          return true
+        end
       end
     end
 
@@ -109,7 +112,10 @@ module Betterlog
       return unless @severities.include?(event.severity)
       return if emitters.full? && !emitters.include?(event.emitter)
       search_matched?(event) or return
-      if format = @opts[?p]
+      format = @opts[?p]&.to_sym
+      if format == :json || format == :j
+        puts event.format(pretty: false, color: @opts[?c])
+      elsif format
         puts event.format(pretty: :format, color: @opts[?c], format: format)
       else
         puts "#{prefix}#{event}"
