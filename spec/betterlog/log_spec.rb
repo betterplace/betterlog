@@ -137,59 +137,11 @@ describe Betterlog::Log do
     end
   end
 
-  describe '#measure' do
+  describe '#metric' do
     after do
       Time.dummy = nil
     end
 
-    it 'can be sent after measuring times' do
-      expected_event = Log::Event.new(
-        message:   'a metric foo=10.0',
-        name:      'foo',
-        value:     10.0,
-        timestamp: "2011-11-11T10:11:21.000Z",
-        type:      'metric',
-        severity:  'info'
-      )
-      expect(instance).to receive(:emit).with(expected_event)
-      Log.measure(name: 'foo') do
-        Time.dummy = Time.now + 10
-      end
-    end
-
-    class MyEx < StandardError
-      def backtrace
-        %w[ backtrace ]
-      end
-    end
-
-    it 'adds exception information if block raises' do
-      expected_event = Log::Event.new(
-        name:       'foo',
-        value:       3.0,
-        timestamp:   "2011-11-11T10:11:14.000Z",
-        message:     '"MyEx: we were fucked" while measuring metric foo',
-        error_class: 'MyEx',
-        backtrace:   %w[ backtrace ],
-        type:        'metric',
-        severity:    'info'
-      )
-      expect(instance).to receive(:emit).with(expected_event)
-      raised = false
-      begin
-        Log.measure(name: 'foo') do
-          Time.dummy = Time.now + 3
-          raise MyEx, "we were fucked"
-          Time.dummy = Time.now + 7
-        end
-      rescue MyEx
-        raised = true
-      end
-      expect(raised).to eq true
-    end
-  end
-
-  describe '#metric' do
     it 'logs metrics with a specific structure on info log level' do
       expected_event = Log::Event.new(
         message:  'a metric controller.action=0.123',
@@ -226,5 +178,54 @@ describe Betterlog::Log do
       expect(instance).to receive(:emit).with(expected_event)
       Log.metric(name: 'controller.action', value: 0.123, foo: 'bar')
     end
+
+    it 'can be sent after measuring times' do
+      expected_event = Log::Event.new(
+        message:   'a metric foo=10.0',
+        name:      'foo',
+        value:     10.0,
+        duration:  10.0,
+        timestamp: "2011-11-11T10:11:21.000Z",
+        type:      'metric',
+        severity:  'info'
+      )
+      expect(instance).to receive(:emit).with(expected_event)
+      Log.metric(name: 'foo') do
+        Time.dummy = Time.now + 10
+      end
+    end
+
+    class MyEx < StandardError
+      def backtrace
+        %w[ backtrace ]
+      end
+    end
+
+    it 'adds exception information if block raises' do
+      expected_event = Log::Event.new(
+        name:       'foo',
+        value:       3.0,
+        duration:    3.0,
+        timestamp:   "2011-11-11T10:11:14.000Z",
+        message:     '"MyEx: we were fucked" while measuring metric foo',
+        error_class: 'MyEx',
+        backtrace:   %w[ backtrace ],
+        type:        'metric',
+        severity:    'info'
+      )
+      expect(instance).to receive(:emit).with(expected_event)
+      raised = false
+      begin
+        Log.metric(name: 'foo') do
+          Time.dummy = Time.now + 3
+          raise MyEx, "we were fucked"
+          Time.dummy = Time.now + 7
+        end
+      rescue MyEx
+        raised = true
+      end
+      expect(raised).to eq true
+    end
+
   end
 end

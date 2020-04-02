@@ -89,29 +89,11 @@ module Betterlog
     # evaluation.
     #
     # @param name the name of the recorded metric.
-    # @param value of the recorded metric.
+    # @param value of the recorded metric, defaults to duration if block was given.
     # @param **rest additional rest is logged as well.
     # @return [ Log ] this object itself.
-    def metric(name:, value:, **rest)
-      protect do
-        event = build_metric(name: name, value: value, **rest)
-        emit event
-      end
-    end
-
-    # Logs a time measure on severity debug, by default, this can be changed by
-    # passing the severity: keyword.
-    #
-    # If an error occurs during measurement details about it are added to the
-    # metric event.
-    #
-    # @param name the name of the recorded metric.
-    # @param **rest additional rest is logged as well.
-    # @param block the block around which the measure is teaken.
-    # @return [ Log ] this object itself.
-    def measure(name:, **rest, &block)
-      raise ArgumentError, 'must be called with a block' unless block_given?
-      time_block { yield }
+    def metric(name:, value: nil, **rest, &block)
+      time_block(&block)
     rescue => error
       e = Log::Event.ify(error)
       rest |= e.as_hash.subhash(:error_class, :backtrace, :message)
@@ -119,7 +101,14 @@ module Betterlog
       raise error
     ensure
       protect do
-        event = build_metric(name: name, value: timed_duration, **rest)
+        if timed_duration
+          rest[:duration] = timed_duration
+        end
+        event = build_metric(
+          name:     name,
+          value:    value || timed_duration,
+          **rest
+        )
         emit event
       end
     end
@@ -190,11 +179,12 @@ module Betterlog
 
     thread_local :timed_duration
 
-    def time_block
+    def time_block(&block)
+      block or return
       s = Time.now
-      yield
+      block.call
     ensure
-      self.timed_duration = Time.now - s
+      block and self.timed_duration = Time.now - s
     end
   end
 end
