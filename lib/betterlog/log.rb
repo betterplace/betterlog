@@ -90,10 +90,12 @@ module Betterlog
     #
     # @param name the name of the recorded metric.
     # @param value of the recorded metric, defaults to duration if block was given.
+    # @param success a Proc with parameter +result+ that returns true iff block
+    #        result was asuccessful
     # @param **rest additional rest is logged as well.
     # @return [ Log ] this object itself.
-    def metric(name:, value: nil, **rest, &block)
-      time_block(&block)
+    def metric(name:, value: nil, success: -> result { true }, **rest, &block)
+      result = time_block(&block)
     rescue => error
       e = Log::Event.ify(error)
       rest |= e.as_hash.subhash(:error_class, :backtrace, :message)
@@ -107,6 +109,7 @@ module Betterlog
         event = build_metric(
           name:     name,
           value:    value || timed_duration,
+          success: success.(result),
           **rest
         )
         emit event

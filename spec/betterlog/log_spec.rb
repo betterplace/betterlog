@@ -147,6 +147,7 @@ describe Betterlog::Log do
         message:  'a metric controller.action=0.123',
         name:     'controller.action',
         value:    0.123,
+        success:  true,
         type:     'metric',
         severity: 'info'
       )
@@ -159,6 +160,7 @@ describe Betterlog::Log do
         message:  'a metric controller.action=0.123',
         name:     'controller.action',
         value:    0.123,
+        success:  true,
         type:     'metric',
         severity: :info,
       )
@@ -172,6 +174,7 @@ describe Betterlog::Log do
         foo:      'bar',
         name:     'controller.action',
         value:    0.123,
+        success:  true,
         type:     'metric',
         severity: 'info'
       )
@@ -184,14 +187,16 @@ describe Betterlog::Log do
         message:   'a metric foo=10.0',
         name:      'foo',
         value:     10.0,
+        success:   true,
         duration:  10.0,
         timestamp: "2011-11-11T10:11:21.000Z",
         type:      'metric',
         severity:  'info'
       )
       expect(instance).to receive(:emit).with(expected_event)
-      Log.metric(name: 'foo') do
+      Log.metric(name: 'foo', success: -> result { result == :success }) do
         Time.dummy = Time.now + 10
+        :success
       end
     end
 
@@ -205,6 +210,7 @@ describe Betterlog::Log do
       expected_event = Log::Event.new(
         name:       'foo',
         value:       3.0,
+        success:     false,
         duration:    3.0,
         timestamp:   "2011-11-11T10:11:14.000Z",
         message:     '"MyEx: we were fucked" while measuring metric foo',
@@ -216,10 +222,11 @@ describe Betterlog::Log do
       expect(instance).to receive(:emit).with(expected_event)
       raised = false
       begin
-        Log.metric(name: 'foo') do
+        Log.metric(name: 'foo', success: -> result { result == :success }) do
           Time.dummy = Time.now + 3
           raise MyEx, "we were fucked"
           Time.dummy = Time.now + 7
+          :success
         end
       rescue MyEx
         raised = true
