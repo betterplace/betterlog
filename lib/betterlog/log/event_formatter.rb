@@ -52,7 +52,8 @@ module Betterlog
             invisible = $1.full?
             directive = $2
             key       = $3
-            if value = @event[key]
+            value     = @event[key]
+            unless value.nil?
               formatted_value =
                 if directive
                   case directive
