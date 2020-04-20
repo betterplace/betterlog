@@ -14,7 +14,7 @@ module Betterlog
 
     def self.notify(event)
       notifiers.each do |notifier|
-        notifier.notify(event.notify?, event.as_hash)
+        notifier.notify(event.notify?, event.as_json)
       end
     end
 

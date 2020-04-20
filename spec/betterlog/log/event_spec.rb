@@ -1,10 +1,10 @@
 require 'spec_helper'
 
 describe Betterlog::Log::Event do
-  describe '#as_hash' do
+  describe '#as_json' do
     it 'dups hash before returning it' do
       event = described_class.new
-      expect(event.as_hash).not_to equal event.instance_variable_get(:@data)
+      expect(event.as_json).not_to equal event.instance_variable_get(:@data)
     end
   end
 

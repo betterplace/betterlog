@@ -70,12 +70,12 @@ module Betterlog
         @data = Hash[data.sort_by(&:first)]
       end
 
-      def as_hash(*a)
+      def as_json(*a)
         @data.dup
       end
 
       def to_json(*a)
-        as_hash.to_json(*a)
+        as_json.to_json(*a)
       end
 
       def format(*args)

@@ -98,7 +98,7 @@ module Betterlog
       result = time_block(&block)
     rescue => error
       e = Log::Event.ify(error)
-      rest |= e.as_hash.subhash(:error_class, :backtrace, :message)
+      rest |= e.as_json.subhash(:error_class, :backtrace, :message)
       rest[:message] = "#{rest[:message].inspect} while measuring metric #{name}"
       raise error
     ensure
@@ -123,6 +123,21 @@ module Betterlog
 
     def self.context(data_hash)
       instance.context(data_hash)
+    end
+
+    def emit(event)
+      l = caller_locations.reverse_each.each_cons(3).find { |c, n1, n2|
+        n2.absolute_path =~ /betterlog\/log\.rb/ and break c # TODO check if this still works
+      }
+      if l
+        event[:location] = [ l.absolute_path, l.lineno ] * ?:
+      end
+      event[:emitter] = self.class.name.downcase
+      notify(event)
+      logger.send(event.severity.to_sym, event.to_json)
+      self
+    ensure
+      GlobalMetadata.data.clear
     end
 
     private
@@ -156,21 +171,6 @@ module Betterlog
         } | rest,
         severity: severity
       )
-    end
-
-    def emit(event)
-      l = caller_locations.reverse_each.each_cons(3).find { |c, n1, n2|
-        n2.absolute_path =~ /betterlog\/log\.rb/ and break c # TODO check if this still works
-      }
-      if l
-        event[:location] = [ l.absolute_path, l.lineno ] * ?:
-      end
-      event[:emitter] = self.class.name.downcase
-      notify(event)
-      logger.send(event.severity.to_sym, event.to_json)
-      self
-    ensure
-      GlobalMetadata.data.clear
     end
 
     def notify(event)
