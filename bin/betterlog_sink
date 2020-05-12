@@ -7,13 +7,13 @@ require 'json'
 
 LOG_ENV = ENV.fetch('LOG_ENV', 'production')
 
+@config = complex_config.log(LOG_ENV).sink
+
 ENV['KUBECONFIG'] = File.join(
   ENV.fetch('HOME'),
   '.kube',
-  "betterlog-#{LOG_ENV}"
+  @config.cluster.name
 )
-
-@config = complex_config.log(LOG_ENV).sink
 
 def authenticate
   return if File.exist?(ENV['KUBECONFIG'])

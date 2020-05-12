@@ -1,4 +1,3 @@
-# Pass BASE_IMAGE=alpine:3.13.3
 DOCKER_IMAGE_LATEST = betterlog
 DOCKER_IMAGE = $(DOCKER_IMAGE_LATEST):$(REVISION_SHORT)
 PROJECT_ID = betterplace-183212
@@ -48,15 +47,12 @@ tags: clean
 build-info:
 	@echo $(DOCKER_IMAGE)
 
-pull-base:
-	docker pull $(BASE_IMAGE)
-
-build: pull-base
-	docker build -t $(DOCKER_IMAGE) --build-arg=BASE_IMAGE=$(BASE_IMAGE) .
+build:
+	docker build -t $(DOCKER_IMAGE) .
 	$(MAKE) build-info
 
-build-force: pull-base
-	docker build -t $(DOCKER_IMAGE) --build-arg=BASE_IMAGE=$(BASE_IMAGE) --no-cache .
+build-force:
+	docker build -t $(DOCKER_IMAGE) --no-cache .
 	$(MAKE) build-info
 
 debug:
