@@ -83,7 +83,7 @@ module Betterlog
       rescue Redis::BaseConnectionError
       end
 
-      @redis.exists(@name) or return Enumerator.new {}
+      @redis.exists?(@name) or return Enumerator.new {}
 
       Enumerator.new do |y|
         name_tmp = "#{@name}_#{rand}"
