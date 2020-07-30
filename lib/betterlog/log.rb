@@ -7,12 +7,16 @@ require 'betterlog/log/severity'
 module Betterlog
   class Log
     include Tins::SexySingleton
+    extend ComplexConfig::Provider::Shortcuts
 
     class_attr_accessor :default_logger
     self.default_logger = Logger.new(STDERR)
+    if level = cc.log.level?
+      default_logger.level = level
+    end
 
     def logger
-      defined?(Rails) && Rails.respond_to?(:logger) ? Rails.logger : ::Logger.new(STDERR)
+      defined?(Rails) && Rails.respond_to?(:logger) ? Rails.logger : self.class.default_logger
     end
 
     # Logs a message on severity info.

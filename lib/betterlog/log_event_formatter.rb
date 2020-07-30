@@ -1,6 +1,7 @@
 module Betterlog
   class LogEventFormatter < ActiveSupport::Logger::Formatter
     include ActiveSupport::TaggedLogging::Formatter
+    include ComplexConfig::Provider::Shortcuts
 
     def emitter
       'legacy'

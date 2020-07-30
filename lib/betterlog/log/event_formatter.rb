@@ -2,6 +2,7 @@ module Betterlog
   class Log
     class EventFormatter
       include Term::ANSIColor
+      include ComplexConfig::Provider::Shortcuts
 
       def initialize(event)
         @event = event

@@ -2,9 +2,15 @@ require 'redis'
 
 module Betterlog
   class Logger < ::Logger
+    include ComplexConfig::Provider::Shortcuts
+
     def initialize(redis, shift_age = 0, shift_size = 1048576, name: nil, buffer_size: nil, **opts)
       @redis       = redis
       @fallback    = ::Logger.new(STDERR)
+      if level = cc.log.level?
+        self.level      = level
+        @fallback.level = level
+      end
       @name        = name || self.class.name
       @buffer_size = determine_buffer_size(buffer_size)
       super(nil, shift_age, shift_size, **opts)
@@ -92,7 +98,9 @@ module Betterlog
         s = 0
         e = @redis.strlen(name_tmp) - 1
         until s > e
-          y.yield @redis.getrange(name_tmp, s, s + chunk_size - 1)
+          range = @redis.getrange(name_tmp, s, s + chunk_size - 1)
+          range.force_encoding 'ASCII-8BIT'
+          y.yield range
           s += chunk_size
         end
 
@@ -115,9 +123,10 @@ module Betterlog
       chunk_size > 0 or raise ArgumentError, 'chunk_size > 0 required'
       Enumerator.new do |y|
         buffer = ''
+        buffer.encode! 'ASCII-8BIT'
         each_chunk(chunk_size: chunk_size) do |chunk|
           buffer << chunk
-          buffer.gsub!(/\A(.*?#$/)/) do |line|
+          buffer.gsub!(/\A(.*?#$/)/n) do |line|
             y.yield(line)
             ''
           end

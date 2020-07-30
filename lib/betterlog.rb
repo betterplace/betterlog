@@ -2,6 +2,7 @@ require 'tins/xt'
 require 'json'
 require 'logger'
 require 'time'
+require 'complex_config'
 require 'term/ansicolor'
 
 module Betterlog
