@@ -11,7 +11,7 @@ module Betterlog
 
     class_attr_accessor :default_logger
     self.default_logger = Logger.new(STDERR)
-    if level = cc.log.level?
+    if level = cc.log?&.level?
       default_logger.level = level
     end
 
