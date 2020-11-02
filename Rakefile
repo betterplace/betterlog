@@ -30,6 +30,7 @@ GemHadar do
   development_dependency 'rake'
   development_dependency 'rspec'
   development_dependency 'simplecov'
+  development_dependency 'mock_redis'
 end
 
 task :default => :spec

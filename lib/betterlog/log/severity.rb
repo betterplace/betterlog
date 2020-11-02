@@ -1,3 +1,5 @@
+require 'logger'
+
 module Betterlog
   class Log
     class Severity

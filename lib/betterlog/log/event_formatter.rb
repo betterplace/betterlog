@@ -1,3 +1,6 @@
+require 'time'
+require 'term/ansicolor'
+
 module Betterlog
   class Log
     class EventFormatter

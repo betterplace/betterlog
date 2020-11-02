@@ -18,7 +18,7 @@ betterlog-server: cmd/betterlog-server/main.go betterlog/*.go
 local: betterlog-server
 	REDIS_URL=$(REDIS_URL) ./betterlog-server
 
-fetch: fake-package
+setup: fake-package
 	go mod download
 
 fake-package:

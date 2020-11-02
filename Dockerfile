@@ -1,4 +1,4 @@
-FROM alpine:3.12.0 AS builder
+FROM alpine:3.12.1 AS builder
 
 # Update/Upgrade/Add packages for building
 
@@ -16,9 +16,9 @@ RUN make clobber
 
 RUN go get -u github.com/betterplace/go-init
 
-RUN make fetch all
+RUN make setup all
 
-FROM alpine:3.12.0 AS runner
+FROM alpine:3.12.1 AS runner
 
 # Update/Upgrade/Add packages
 

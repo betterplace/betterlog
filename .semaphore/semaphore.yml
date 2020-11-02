@@ -1,0 +1,60 @@
+version: v1.0
+name: Betterlog pipeline
+agent:
+  machine:
+    type: e1-standard-2
+    os_image: ubuntu1804
+
+blocks:
+  - name: Caching
+    task:
+      prologue:
+        commands:
+          - checkout
+      jobs:
+        - name: cache bundle
+          commands:
+            - sem-version ruby 2.7.2
+            - cache restore gems-$SEMAPHORE_GIT_BRANCH,gems-master
+            - bundle config jobs $(getconf _NPROCESSORS_ONLN)
+            - bundle install
+            - cache store gems-$SEMAPHORE_GIT_BRANCH vendor/bundle
+
+  - name: "Unit tests"
+    task:
+      env_vars:
+        - name: RAILS_ENV
+          value: test
+      prologue:
+        commands:
+          - checkout
+
+          # Setup ruby
+          - sem-version ruby 2.7.2
+
+          # Setup gems
+          - cache restore gems-$SEMAPHORE_GIT_BRANCH,gems-master
+          - bundle config jobs $(getconf _NPROCESSORS_ONLN)
+          - bundle install
+
+      jobs:
+        - name: RSpec Unit Tests
+          commands:
+            - rake
+
+  - name: Building Docker Image
+    task:
+
+      secrets:
+        - name: GCP
+
+      prologue:
+        commands:
+          - gcloud auth activate-service-account --key-file=.secrets/gcp.json
+          - gcloud auth configure-docker -q
+          - checkout
+
+      jobs:
+        - name: Building and pushing
+          commands:
+            - make build push-latest

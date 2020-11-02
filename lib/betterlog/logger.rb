@@ -1,4 +1,8 @@
-require 'redis'
+begin
+  require 'redis' unless defined?(Redis)
+rescue LoadError
+end
+require 'logger'
 
 module Betterlog
   class Logger < ::Logger
