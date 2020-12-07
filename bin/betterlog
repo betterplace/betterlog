@@ -96,10 +96,10 @@ module Betterlog
       return true unless @opts[?s]
       @opts[?s].all? do |param|
         case param
-        when /:\?\z/
-          event[$`].present?
-        when /:([^:]+)\z/
-          event[$`].full?(:include?, $1)
+        when /\A([^:]+):([^=]+)=(.+)\z/
+          event[$1]&.[]($2.to_sym)&.include?($3)
+        when /\A([^=]+)=(.+)\z/
+          event[$1]&.include?($2)
         when String
           event.to_json.include?(@opts[?s])
         else
