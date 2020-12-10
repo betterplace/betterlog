@@ -57,4 +57,5 @@ blocks:
       jobs:
         - name: Building and pushing
           commands:
-            - make build push-latest
+            - make build
+            - test "$SEMAPHORE_GIT_BRANCH" = "master" && make push-latest
