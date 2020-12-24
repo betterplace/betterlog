@@ -16,6 +16,7 @@ blocks:
           commands:
             - sem-version ruby 2.7.2
             - cache restore gems-$SEMAPHORE_GIT_BRANCH,gems-master
+            - bundle config set path 'vendor/bundle'
             - bundle config jobs $(getconf _NPROCESSORS_ONLN)
             - bundle install
             - cache store gems-$SEMAPHORE_GIT_BRANCH vendor/bundle
@@ -34,6 +35,7 @@ blocks:
 
           # Setup gems
           - cache restore gems-$SEMAPHORE_GIT_BRANCH,gems-master
+          - bundle config set path 'vendor/bundle'
           - bundle config jobs $(getconf _NPROCESSORS_ONLN)
           - bundle install
 
