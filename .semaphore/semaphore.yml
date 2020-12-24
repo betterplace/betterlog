@@ -42,7 +42,7 @@ blocks:
       jobs:
         - name: RSpec Unit Tests
           commands:
-            - rake
+            - bundle exec rake
 
   - name: Building Docker Image
     task:
