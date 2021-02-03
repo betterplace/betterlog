@@ -75,7 +75,15 @@ module Betterlog
       end
 
       def to_json(*a)
-        as_json.to_json(*a)
+        JSON.generate(as_json)
+      rescue
+        # Sometimes rails logging messages contain invalid utf-8 characters
+        # generating various standard errors. Let's fallback to a barebones
+        # event with just a cleaned up message for these cases.
+        JSON.generate({
+          severity: @data[:severity],
+          message: @data.fetch(:message, '').encode('utf-8', invalid: :replace, undef: :replace, replace: ''),
+        })
       end
 
       def format(*args)

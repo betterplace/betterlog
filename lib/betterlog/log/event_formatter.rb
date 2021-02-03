@@ -18,7 +18,7 @@ module Betterlog
         when :format
           format_pattern(format: format)
         else
-          @event.to_json
+          JSON.generate(@event)
         end
       ensure
         Term::ANSIColor.coloring = old_coloring

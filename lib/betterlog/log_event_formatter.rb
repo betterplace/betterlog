@@ -36,7 +36,7 @@ module Betterlog
             event[:location] = [ l.absolute_path, l.lineno ] * ?:
           end
           program and event[:program] = program
-          message = event.to_json
+          message = JSON.generate(event)
         end
       end
     rescue => e

@@ -26,6 +26,17 @@ describe Betterlog::Log do
     end
   end
 
+  describe 'Log::Event.to_json' do
+    it 'can be called' do
+      expect(event.to_json).to be_present
+    end
+
+    it 'can handle invalid UTF-8 characters' do
+      event = Log::Event.ify("foo\xCEbar")
+      expect(event.to_json).to eq(JSON(severity: "DEBUG", message: 'foobar'))
+    end
+  end
+
   describe '.parse' do
     it 'can parse an event as a JSON document' do
       expect(Log::Event.parse(event.to_json)).to eq event

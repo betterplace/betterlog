@@ -138,7 +138,7 @@ module Betterlog
       end
       event[:emitter] = self.class.name.downcase
       notify(event)
-      logger.send(event.severity.to_sym, event.to_json)
+      logger.send(event.severity.to_sym, JSON.generate(event))
       self
     ensure
       GlobalMetadata.data.clear
