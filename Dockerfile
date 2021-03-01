@@ -1,4 +1,4 @@
-FROM alpine:3.13.1 AS builder
+FROM alpine:3.13.2 AS builder
 
 # Update/Upgrade/Add packages for building
 
@@ -18,7 +18,7 @@ RUN go get -u github.com/betterplace/go-init
 
 RUN make setup all
 
-FROM alpine:3.13.1 AS runner
+FROM alpine:3.13.2 AS runner
 
 # Update/Upgrade/Add packages
 
