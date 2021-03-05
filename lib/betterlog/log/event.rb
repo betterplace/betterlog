@@ -86,8 +86,8 @@ module Betterlog
         })
       end
 
-      def format(*args)
-        Log::EventFormatter.new(self).format(*args)
+      def format(**args)
+        Log::EventFormatter.new(self).format(**args)
       end
 
       alias to_s format
