@@ -48,11 +48,11 @@ build-info:
 	@echo $(DOCKER_IMAGE)
 
 build:
-	docker build -t $(DOCKER_IMAGE) .
+	docker build --pull -t $(DOCKER_IMAGE) .
 	$(MAKE) build-info
 
 build-force:
-	docker build -t $(DOCKER_IMAGE) --no-cache .
+	docker build --pull -t $(DOCKER_IMAGE) --no-cache .
 	$(MAKE) build-info
 
 debug:
