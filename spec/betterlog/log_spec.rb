@@ -21,7 +21,7 @@ describe Betterlog::Log do
     end
 
     it 'can eventify a hash' do
-      event = Log::Event.ify(message: 'hallo')
+      event = Log::Event.ify({ message: 'hallo' })
       expect(event).to be_a Log::Event
     end
   end
