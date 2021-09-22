@@ -60,4 +60,4 @@ blocks:
         - name: Building and pushing
           commands:
             - make build
-            - test "$SEMAPHORE_GIT_BRANCH" = "master" && make push-latest
+            - test "$SEMAPHORE_GIT_BRANCH" = "master" && make push-latest || true
