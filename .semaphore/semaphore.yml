@@ -3,7 +3,7 @@ name: Betterlog pipeline
 agent:
   machine:
     type: e1-standard-2
-    os_image: ubuntu1804
+    os_image: ubuntu2004
 
 blocks:
   - name: Caching
@@ -14,7 +14,7 @@ blocks:
       jobs:
         - name: cache bundle
           commands:
-            - sem-version ruby 2.7.2
+            - sem-version ruby $(awk '/^ruby/ { print $2 }' .tool-versions)
             - cache restore gems-$SEMAPHORE_GIT_BRANCH,gems-master
             - bundle config set path 'vendor/bundle'
             - bundle config jobs $(getconf _NPROCESSORS_ONLN)
@@ -31,7 +31,7 @@ blocks:
           - checkout
 
           # Setup ruby
-          - sem-version ruby 2.7.2
+          - sem-version ruby $(awk '/^ruby/ { print $2 }' .tool-versions)
 
           # Setup gems
           - cache restore gems-$SEMAPHORE_GIT_BRANCH,gems-master

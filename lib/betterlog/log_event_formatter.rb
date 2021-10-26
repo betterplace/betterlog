@@ -1,3 +1,5 @@
+require 'term/ansicolor'
+
 module Betterlog
   class LogEventFormatter < ActiveSupport::Logger::Formatter
     include ActiveSupport::TaggedLogging::Formatter
@@ -8,13 +10,16 @@ module Betterlog
     end
 
     def call(severity, timestamp, program, message)
-      super
-      message = message.to_s
+      message = super.to_s
       if cc.log.legacy_supported
         if message.blank?
-          return ''
+          message = ''
         elsif !Log::Event.is?(message)
-          m = message.sub(/\s+$/, '')
+
+          m = message.to_s
+          m = Term::ANSIColor.uncolor(m)
+          m = m.sub(/\s+$/, '')
+
           timestamp = timestamp.utc.iso8601(3)
           event = Log::Event.new(
             emitter:    emitter,
@@ -26,7 +31,7 @@ module Betterlog
           if backtrace = m.grep(/^\s*([^:]+):(\d+)/)
             if backtrace.size > 1
               event[:backtrace] = backtrace.map(&:chomp)
-              event[:message] = 'a logged backtrace'
+              event[:message] = backtrace.first
             end
           end
           if l = caller_locations.reverse_each.each_cons(2).find { |c, n|
@@ -42,7 +47,7 @@ module Betterlog
     rescue => e
       Betterlog::Log.logger.error(e)
     ensure
-      # Do not "message << ?\n" - A frozn string may be passed in
+      # Do not "message << ?\n" - A frozen string may be passed in
       message.end_with?(?\n) or message = "#{message}\n"
       return message
     end

@@ -1,6 +1,7 @@
 require 'tins/xt'
 require 'json'
 require 'complex_config'
+require 'term/ansicolor'
 
 module Betterlog
 end
