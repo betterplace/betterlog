@@ -10,7 +10,6 @@ module Betterlog
     end
 
     def call(severity, timestamp, program, message)
-      message = super.to_s
       if cc.log.legacy_supported
         if message.blank?
           message = ''
