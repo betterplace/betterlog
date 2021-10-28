@@ -6,6 +6,7 @@ require 'term/ansicolor'
 module Betterlog
 end
 
+require 'betterlog/version'
 require 'betterlog/log'
 require 'betterlog/notifiers'
 require 'betterlog/global_metadata'
