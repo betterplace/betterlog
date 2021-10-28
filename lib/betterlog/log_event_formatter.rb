@@ -28,11 +28,10 @@ module Betterlog
             severity:   severity.to_s.downcase,
             # tags:       current_tags,
           )
-          if backtrace = m.grep(/^\s*([^:]+):(\d+)/)
-            if backtrace.size > 1
-              event[:backtrace] = backtrace.map(&:chomp)
-              event[:message] = backtrace.first
-            end
+          backtrace = m.scan(/^\s*(?:[^:]+):(?:\d+).*$/)
+          if backtrace.size > 1
+            event[:backtrace] = backtrace.map { |b| b.sub(/\s+$/, '') }
+            event[:message] = "#{backtrace.first}\n"
           end
           if l = caller_locations.reverse_each.each_cons(2).find { |c, n|
                n.absolute_path =~ /\/lib\/ruby\/.*?\/logger\.rb/ and break c
