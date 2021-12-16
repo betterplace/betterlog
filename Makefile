@@ -26,12 +26,6 @@ fake-package:
 	mkdir -p $(GOPATH)/src/github.com/betterplace
 	ln -s $(shell pwd) $(GOPATH)/src/github.com/betterplace/betterlog
 
-test:
-	@go test
-
-coverage:
-	@go test -coverprofile=coverage.out
-
 coverage-display: coverage
 	@go tool cover -html=coverage.out
 
