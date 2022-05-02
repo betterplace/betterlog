@@ -1,10 +1,24 @@
-FROM alpine:3.14.3 AS builder
+FROM golang:1.18-alpine AS builder
 
 # Update/Upgrade/Add packages for building
 
-RUN apk add --no-cache bash git go build-base
+RUN apk add --no-cache bash git build-base
 
-# Build happening
+# Create appuser.
+ENV USER=appuser
+ENV UID=10001
+
+RUN adduser \
+    --disabled-password \
+    --gecos "" \
+    --home "/none" \
+    --shell "/sbin/nologin" \
+    --no-create-home \
+    --uid "${UID}" \
+    "${USER}"
+
+
+# Build betterlog
 
 WORKDIR /build/betterlog
 
@@ -14,31 +28,22 @@ ENV GOPATH=/build/betterlog/gospace
 
 RUN make clobber
 
-RUN go get -u github.com/betterplace/go-init
-
 RUN make setup all
 
-FROM alpine:3.14.3 AS runner
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -tags netgo -ldflags='-w -s' -o betterlog-server cmd/betterlog-server/main.go
 
-# Update/Upgrade/Add packages
+FROM scratch AS runner
 
-RUN apk add --no-cache bash ca-certificates
+COPY --from=builder /etc/passwd /etc/passwd
 
-RUN apk add --no-cache tzdata && \
-  cp /usr/share/zoneinfo/Europe/Berlin /etc/localtime && \
-  echo Europe/Berlin >/etc/timezone && \
-  apk del tzdata
+COPY --from=builder /etc/group /etc/group
 
-ARG APP_DIR=/app
+COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 
-RUN adduser -h ${APP_DIR} -s /bin/bash -D appuser
+WORKDIR /
 
-RUN mkdir -p /opt/bin
-
-COPY --from=builder --chown=appuser:appuser /build/betterlog/gospace/bin/go-init /build/betterlog/betterlog-server /opt/bin/
-
-ENV PATH /opt/bin:${PATH}
+COPY --from=builder --chown=appuser:appuser /build/betterlog/betterlog-server /
 
 EXPOSE 5514
 
-CMD [ "/opt/bin/go-init", "-pre", "/bin/sleep 3", "-main", "/opt/bin/betterlog-server" ]
+ENTRYPOINT [ "/betterlog-server" ]

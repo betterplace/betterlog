@@ -49,8 +49,8 @@ build-force:
 	docker build --pull -t $(DOCKER_IMAGE) --no-cache .
 	$(MAKE) build-info
 
-debug:
-	docker run --rm -it $(DOCKER_IMAGE) bash
+server:
+	docker run --rm -it $(DOCKER_IMAGE)
 
 pull:
 	docker pull $(REMOTE_TAG)

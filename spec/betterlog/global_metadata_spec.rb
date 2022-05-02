@@ -1,12 +1,14 @@
 require 'spec_helper'
 
 describe Betterlog::GlobalMetadata do
-  let :notifier do
-    Class.new do
-      def notify(message, hash) end
+  class FakeNotifierClass
+    def notify(message, hash) end
 
-      def context(data_hash) end
-    end.new
+    def context(data_hash) end
+  end
+
+  let :notifier do
+    FakeNotifierClass.new
   end
 
   around do |example|
@@ -27,12 +29,12 @@ describe Betterlog::GlobalMetadata do
   end
 
   it 'can "add" data' do
-    expect(notifier).to receive(:context).with(foo: 'bar')
+    expect_any_instance_of(FakeNotifierClass).to receive(:context).with(foo: 'bar')
     expect(described_class.add(foo: 'bar')).to eq described_class.instance
   end
 
   it 'can "add" data via Log.context' do
-    expect(notifier).to receive(:context).with(foo: 'bar')
+    expect_any_instance_of(FakeNotifierClass).to receive(:context).with(foo: 'bar')
     Betterlog::Log.context(foo: 'bar')
   end
 end
