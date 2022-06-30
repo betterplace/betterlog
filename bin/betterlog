@@ -46,6 +46,12 @@ module Betterlog
 
             $ betterlog -f -F rails -p long -c -S ">=error"
 
+          - Match any event containing SELECT
+
+            $ betterlog -f -s SELECT
+
+            $ betterlog -f -s meta:module=api_v4
+
           - Follow rails AND redis logs with default format in colors
             including the last 10 lines:
 
