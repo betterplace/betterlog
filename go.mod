@@ -5,7 +5,7 @@ go 1.19
 require (
 	github.com/go-redis/redis v6.15.9+incompatible
 	github.com/kelseyhightower/envconfig v1.4.0
-	github.com/labstack/echo/v4 v4.8.0
+	github.com/labstack/echo/v4 v4.9.0
 	golang.org/x/crypto v0.0.0-20220817201139-bc19a97f63c8
 )
 
