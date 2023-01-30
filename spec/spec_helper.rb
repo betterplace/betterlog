@@ -9,11 +9,5 @@ begin
   require 'byebug'
 rescue LoadError
 end
-require 'mock_redis'
-class MockRedis
-  class BaseConnectionError < StandardError; end
-  class CannotConnectError < BaseConnectionError; end
-end
-Redis=MockRedis
 require 'betterlog'
 Betterlog::Log.default_logger = Logger.new(nil)

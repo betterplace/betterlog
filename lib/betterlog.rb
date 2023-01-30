@@ -10,7 +10,6 @@ require 'betterlog/version'
 require 'betterlog/log'
 require 'betterlog/notifiers'
 require 'betterlog/global_metadata'
-require 'betterlog/logger'
 
 if defined? Rails
   require 'betterlog/railtie'

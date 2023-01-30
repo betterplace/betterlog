@@ -16,21 +16,19 @@ GemHadar do
     'gospace'
   readme      'README.md'
   title       "#{name.camelize}"
-  executables %w[ betterlog betterlog_pusher betterlog_sink ]
+  executables %w[ betterlog ]
 
   dependency 'tins',           '~>1.3', '>=1.22.0'
   dependency 'complex_config'
   dependency 'file-tail',      '~>1.0'
   dependency 'json',           '~>2.0'
   dependency 'term-ansicolor', '~>1.3'
-  dependency 'redis',          '>=2.8'
   dependency 'redlock'
   dependency 'excon'
 
   development_dependency 'rake'
   development_dependency 'rspec'
   development_dependency 'simplecov'
-  development_dependency 'mock_redis'
 end
 
 task :default => :spec
