@@ -10,6 +10,7 @@ module Betterlog
     thread_local(:data) { {} }
 
     def add(data_hash)
+      data_hash = data_hash.symbolize_keys_recursive
       data = data_hash | data
       Notifiers.context(data_hash)
       self
