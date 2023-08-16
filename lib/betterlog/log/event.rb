@@ -138,6 +138,9 @@ module Betterlog
         if defined? GlobalMetadata
           m |= GlobalMetadata.data
         end
+        if defined? Sidekiq::Context.current
+          m |= Sidekiq::Context.current&.symbolize_keys_recursive
+        end
         m
       end
     end

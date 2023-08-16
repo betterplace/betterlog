@@ -1,14 +1,14 @@
 # -*- encoding: utf-8 -*-
-# stub: betterlog 1.1.0 ruby lib
+# stub: betterlog 1.1.1 ruby lib
 
 Gem::Specification.new do |s|
   s.name = "betterlog".freeze
-  s.version = "1.1.0"
+  s.version = "1.1.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0".freeze) if s.respond_to? :required_rubygems_version=
   s.require_paths = ["lib".freeze]
   s.authors = ["betterplace Developers".freeze]
-  s.date = "2023-02-10"
+  s.date = "2023-08-16"
   s.description = "This library provides structure json logging for our rails projects".freeze
   s.email = "developers@betterplace.org".freeze
   s.executables = ["betterlog".freeze]
