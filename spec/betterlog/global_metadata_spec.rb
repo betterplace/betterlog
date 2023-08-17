@@ -33,10 +33,10 @@ describe Betterlog::GlobalMetadata do
     end
   end
 
-  describe '.with_context' do
+  describe '.with_meta' do
     it 'can add to context and remove it' do
       expect(Betterlog::GlobalMetadata.current).to be_empty
-      Betterlog::GlobalMetadata.with_context(
+      Betterlog::GlobalMetadata.with_meta(
         'foo' => 'bar',
         :bar  => 'foo',
       ) do |my_context|
@@ -49,14 +49,14 @@ describe Betterlog::GlobalMetadata do
 
     it 'can add to nested context and remove it' do
       expect(Betterlog::GlobalMetadata.current).to be_empty
-      Betterlog::GlobalMetadata.with_context(
+      Betterlog::GlobalMetadata.with_meta(
         'foo' => 'bar',
         :bar  => 'foo',
       ) do |my_context|
         expect(Betterlog::GlobalMetadata.current).to eq(foo: 'bar', bar: 'foo')
         expect(my_context).to eq(foo: 'bar', bar: 'foo')
         expect(my_context).to be_frozen
-        Betterlog::GlobalMetadata.with_context('quux' => 'quark') do |my_context|
+        Betterlog::GlobalMetadata.with_meta('quux' => 'quark') do |my_context|
           expect(my_context).to be_frozen
           expect(Betterlog::GlobalMetadata.current).to eq(foo: 'bar', bar: 'foo', quux: 'quark')
           expect(my_context).to eq(foo: 'bar', bar: 'foo', quux: 'quark')
@@ -64,6 +64,16 @@ describe Betterlog::GlobalMetadata do
         expect(my_context).to eq(foo: 'bar', bar: 'foo')
       end
       expect(Betterlog::GlobalMetadata.current).to be_empty
+    end
+
+    it 'has shortcut method Betterlog.with_meta' do
+      expect(Betterlog::GlobalMetadata.current).to be_empty
+      Betterlog.with_meta(
+        'foo' => 'bar',
+        :bar  => 'foo',
+      ) do
+        expect(Betterlog::GlobalMetadata.current).to eq(foo: 'bar', bar: 'foo')
+      end
     end
   end
 

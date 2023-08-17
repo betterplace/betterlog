@@ -115,7 +115,7 @@ describe Betterlog::Log do
         'test',
         hash_including(meta: { foo: 'bar' }),
       )
-      Betterlog::GlobalMetadata.with_context(foo: 'bar') do
+      Betterlog.with_meta(foo: 'bar') do
         Log.info('test', notify: true)
       end
     end

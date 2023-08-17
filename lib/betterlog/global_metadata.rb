@@ -20,11 +20,15 @@ module Betterlog
       keys.each { current.delete(_1) }
     end
 
-    def with_context(data = {})
+    def with_meta(data = {}, &block)
       add data
-      yield current.dup.freeze
+      block.call(current.dup.freeze)
     ensure
       remove data
     end
+  end
+
+  def self.with_meta(data = {}, &block)
+    Betterlog::GlobalMetadata.with_meta(data, &block)
   end
 end
