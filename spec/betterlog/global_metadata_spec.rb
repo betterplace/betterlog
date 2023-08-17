@@ -1,6 +1,72 @@
 require 'spec_helper'
 
 describe Betterlog::GlobalMetadata do
+  describe '.add' do
+    it 'can add to context' do
+      expect(Betterlog::GlobalMetadata.current).to be_empty
+      Betterlog::GlobalMetadata.add(
+        'foo' => 'bar',
+      )
+      expect(Betterlog::GlobalMetadata.current).to eq(foo: 'bar')
+    end
+  end
+
+  describe '.remove' do
+    it 'can remove by hash' do
+      Betterlog::GlobalMetadata.add(
+        'foo' => 'bar',
+      )
+      expect(Betterlog::GlobalMetadata.current).to eq(foo: 'bar')
+      Betterlog::GlobalMetadata.remove(
+        'foo' => 'bar',
+      )
+      expect(Betterlog::GlobalMetadata.current).to be_empty
+    end
+
+    it 'can remove by array' do
+      Betterlog::GlobalMetadata.add(
+        'foo' => 'bar',
+      )
+      expect(Betterlog::GlobalMetadata.current).to eq(foo: 'bar')
+      Betterlog::GlobalMetadata.remove(%i[ foo ])
+      expect(Betterlog::GlobalMetadata.current).to be_empty
+    end
+  end
+
+  describe '.with_context' do
+    it 'can add to context and remove it' do
+      expect(Betterlog::GlobalMetadata.current).to be_empty
+      Betterlog::GlobalMetadata.with_context(
+        'foo' => 'bar',
+        :bar  => 'foo',
+      ) do |my_context|
+        expect(Betterlog::GlobalMetadata.current).to eq(foo: 'bar', bar: 'foo')
+        expect(my_context).to eq(foo: 'bar', bar: 'foo')
+        expect(my_context).to be_frozen
+      end
+      expect(Betterlog::GlobalMetadata.current).to be_empty
+    end
+
+    it 'can add to nested context and remove it' do
+      expect(Betterlog::GlobalMetadata.current).to be_empty
+      Betterlog::GlobalMetadata.with_context(
+        'foo' => 'bar',
+        :bar  => 'foo',
+      ) do |my_context|
+        expect(Betterlog::GlobalMetadata.current).to eq(foo: 'bar', bar: 'foo')
+        expect(my_context).to eq(foo: 'bar', bar: 'foo')
+        expect(my_context).to be_frozen
+        Betterlog::GlobalMetadata.with_context('quux' => 'quark') do |my_context|
+          expect(my_context).to be_frozen
+          expect(Betterlog::GlobalMetadata.current).to eq(foo: 'bar', bar: 'foo', quux: 'quark')
+          expect(my_context).to eq(foo: 'bar', bar: 'foo', quux: 'quark')
+        end
+        expect(my_context).to eq(foo: 'bar', bar: 'foo')
+      end
+      expect(Betterlog::GlobalMetadata.current).to be_empty
+    end
+  end
+
   class FakeNotifierClass
     def notify(message, hash) end
 
@@ -16,25 +82,15 @@ describe Betterlog::GlobalMetadata do
     example.run
   ensure
     Betterlog::Notifiers.notifiers.clear
-    described_class.data.clear
+    described_class.current.clear
   end
 
   it 'can haz empty data' do
-    expect(described_class.data).to eq({})
+    expect(described_class.current).to eq({})
   end
 
   it 'can haz some data' do
-    described_class.data |= { foo: 'bar' }
-    expect(described_class.data).to eq({ foo: 'bar' })
-  end
-
-  it 'can "add" data' do
-    expect_any_instance_of(FakeNotifierClass).to receive(:context).with(foo: 'bar')
-    expect(described_class.add(foo: 'bar')).to eq described_class.instance
-  end
-
-  it 'can "add" data via Log.context' do
-    expect_any_instance_of(FakeNotifierClass).to receive(:context).with(foo: 'bar')
-    Betterlog::Log.context(foo: 'bar')
+    described_class.current |= { foo: 'bar' }
+    expect(described_class.current).to eq({ foo: 'bar' })
   end
 end

@@ -13,15 +13,17 @@ module Betterlog
     end
 
     def self.notify(event)
+      event.notify? or return
       notifiers.each do |notifier|
-        notifier.notify(event.notify?, event.as_json)
+        context(event.as_json)
+        notifier.notify(event[:message], event.as_json)
       end
     end
 
-    def self.context(data_hash)
+    def self.context(data)
       notifiers.each do |notifier|
         notifier.respond_to?(:context) or next
-        notifier.context(data_hash)
+        notifier.context(data)
       end
     end
   end

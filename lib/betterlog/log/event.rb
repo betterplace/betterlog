@@ -3,42 +3,23 @@ module Betterlog
     class Event
       require 'socket'
 
-      def self.ify(arg, severity: :debug, notify: nil, rest: {})
-        notify ||= rest.delete(:notify)
+      def self.ify(arg, **rest)
+        rest = rest.symbolize_keys_recursive(circular: :circular)
         if e = arg.ask_and_send(:exception)
-          ify(
+          new(
             {
               error_class:  e.class.name,
               message:      "#{e.class.name}: #{e.message}",
               backtrace:    e.backtrace,
-            },
-            severity: severity,
-            rest: rest,
-            notify: notify,
-          )
-        elsif s = arg.ask_and_send(:to_str)
-          new(
-            ({ notify: s } if notify).to_h |
-            {
-              message:  s,
-              severity: severity,
             } | rest
           )
-        elsif h = arg.ask_and_send(:to_hash)
-          arg = h | { severity: severity } | rest
-          new(
-            ({ notify: h[:message] || arg.to_s } if notify).to_h |
-            arg
-          )
+        elsif message = arg.ask_and_send(:to_str)
+          new({ message: } | rest)
+        elsif hash = arg.ask_and_send(:to_hash)
+          new(hash | rest)
         else
           message = "Logging #{arg.inspect}"
-          new(
-            ({ notify: message } if notify).to_h |
-            {
-              message: message,
-              severity: severity,
-            } | rest
-          )
+          new({ message: } | rest)
         end
       end
 
@@ -57,16 +38,16 @@ module Betterlog
       end
 
       def initialize(data = {})
-        data = data.symbolize_keys_recursive(circular: :circular) | meta
-        unless data.key?(:message)
-          data[:message] = "a #{data[:type]} type log message of severity #{data[:severity]}"
-        end
+        data = compute_data(data.symbolize_keys_recursive(circular: :circular))
         data[:severity] =
           begin
             Severity.new((data[:severity] || :debug))
           rescue
             Severity.new(:debug)
           end
+        unless data.key?(:message)
+          data[:message] = "a #{data[:type]} type log message of severity #{data[:severity]}"
+        end
         @data = Hash[data.sort_by(&:first)]
       end
 
@@ -124,8 +105,8 @@ module Betterlog
 
       private
 
-      def meta
-        m = {
+      def compute_data(data)
+        d = data | {
           timestamp: Time.now.utc.iso8601(3),
           pid:       $$,
           program:   File.basename($0),
@@ -133,15 +114,12 @@ module Betterlog
           type:      'rails',
           facility:  'local0',
           host:      (Socket.gethostname rescue nil),
-          thread_id:  Thread.current.object_id
+          thread_id: Thread.current.object_id,
         }
-        if defined? GlobalMetadata
-          m |= GlobalMetadata.data
-        end
-        if defined? Sidekiq::Context.current
-          m |= Sidekiq::Context.current&.symbolize_keys_recursive
-        end
-        m
+        d[:meta] ||= {}
+        d[:meta] |= (GlobalMetadata.current |
+          (Sidekiq::Context.current&.symbolize_keys_recursive if defined?(Sidekiq::Context)))
+        d
       end
     end
   end

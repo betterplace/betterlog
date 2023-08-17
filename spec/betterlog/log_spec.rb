@@ -78,6 +78,8 @@ describe Betterlog::Log do
     let :notifier do
       Class.new do
         def notify(message, hash) end
+
+        def context(data) end
       end.new
     end
 
@@ -103,9 +105,19 @@ describe Betterlog::Log do
     it 'can send explicit notifications with additional hash values' do
       expect(notifier).to receive(:notify).with(
         'test',
-        hash_including(message: 'test', foo: 'bar')
+        hash_including(meta: { foo: 'bar' }),
       )
-      Log.info({ message: 'test', foo: 'bar' }, notify: true)
+      Log.info({ message: 'test', meta: { foo: 'bar' } }, notify: true)
+    end
+
+    it 'can send notifications with additional hash values for context' do
+      expect(notifier).to receive(:notify).with(
+        'test',
+        hash_including(meta: { foo: 'bar' }),
+      )
+      Betterlog::GlobalMetadata.with_context(foo: 'bar') do
+        Log.info('test', notify: true)
+      end
     end
 
     it 'can send explicit notifications for exceptions' do
@@ -146,104 +158,5 @@ describe Betterlog::Log do
       expect(instance).to receive(:emit).with(expected_event)
       Log.error(exception, foo: 'bar')
     end
-  end
-
-  describe '#metric' do
-    after do
-      Time.dummy = nil
-    end
-
-    it 'logs metrics with a specific structure on info log level' do
-      expected_event = Log::Event.new(
-        message:  'a metric controller.action=0.123',
-        name:     'controller.action',
-        value:    0.123,
-        success:  true,
-        type:     'metric',
-        severity: 'info'
-      )
-      expect(instance).to receive(:emit).with(expected_event)
-      Log.metric(name: 'controller.action', value: 0.123)
-    end
-
-    it 'logs metrics on a given log level' do
-      expected_event = Log::Event.new(
-        message:  'a metric controller.action=0.123',
-        name:     'controller.action',
-        value:    0.123,
-        success:  true,
-        type:     'metric',
-        severity: :info,
-      )
-      expect(instance).to receive(:emit).with(expected_event)
-      Log.metric(severity: :info, name: 'controller.action', value: 0.123)
-    end
-
-    it 'logs metrics with additional data' do
-      expected_event = Log::Event.new(
-        message:  'a metric controller.action=0.123',
-        foo:      'bar',
-        name:     'controller.action',
-        value:    0.123,
-        success:  true,
-        type:     'metric',
-        severity: 'info'
-      )
-      expect(instance).to receive(:emit).with(expected_event)
-      Log.metric(name: 'controller.action', value: 0.123, foo: 'bar')
-    end
-
-    it 'can be sent after measuring times' do
-      expected_event = Log::Event.new(
-        message:   'a metric foo=10.0',
-        name:      'foo',
-        value:     10.0,
-        success:   true,
-        duration:  10.0,
-        timestamp: "2011-11-11T10:11:21.000Z",
-        type:      'metric',
-        severity:  'info'
-      )
-      expect(instance).to receive(:emit).with(expected_event)
-      Log.metric(name: 'foo', success: -> result { result == :success }) do
-        Time.dummy = Time.now + 10
-        :success
-      end
-    end
-
-    class MyEx < StandardError
-      def backtrace
-        %w[ backtrace ]
-      end
-    end
-
-    it 'adds exception information if block raises' do
-      expected_event = Log::Event.new(
-        name:       'foo',
-        value:       3.0,
-        success:     false,
-        duration:    3.0,
-        timestamp:   "2011-11-11T10:11:14.000Z",
-        message:     '"MyEx: we were fucked" while measuring metric foo',
-        error_class: 'MyEx',
-        backtrace:   %w[ backtrace ],
-        type:        'metric',
-        severity:    'info'
-      )
-      expect(instance).to receive(:emit).with(expected_event)
-      raised = false
-      begin
-        Log.metric(name: 'foo', success: -> result { result == :success }) do
-          Time.dummy = Time.now + 3
-          raise MyEx, "we were fucked"
-          Time.dummy = Time.now + 7
-          :success
-        end
-      rescue MyEx
-        raised = true
-      end
-      expect(raised).to eq true
-    end
-
   end
 end

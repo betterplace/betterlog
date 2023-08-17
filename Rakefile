@@ -29,6 +29,8 @@ GemHadar do
   development_dependency 'rake'
   development_dependency 'rspec'
   development_dependency 'simplecov'
+  development_dependency 'debug'
+  development_dependency 'all_images'
 end
 
 task :default => :spec

@@ -26,7 +26,8 @@ module Betterlog
     # @return [ Log ] this object itself.
     def info(object, **rest)
       protect do
-        emit Log::Event.ify(object, severity: __method__, rest: rest)
+        rest = { severity: __method__ } | rest
+        emit Log::Event.ify(object, **rest)
       end
     end
 
@@ -37,7 +38,8 @@ module Betterlog
     # @return [ Log ] this object itself.
     def warn(object, **rest)
       protect do
-        emit Log::Event.ify(object, severity: __method__, rest: rest)
+        rest = { severity: __method__ } | rest
+        emit Log::Event.ify(object, **rest)
       end
     end
 
@@ -48,7 +50,8 @@ module Betterlog
     # @return [ Log ] this object itself.
     def debug(object, **rest)
       protect do
-        emit Log::Event.ify(object, severity: __method__, rest: rest)
+        rest = { severity: __method__ } | rest
+        emit Log::Event.ify(object, **rest)
       end
     end
 
@@ -59,7 +62,8 @@ module Betterlog
     # @return [ Log ] this object itself.
     def error(object, **rest)
       protect do
-        emit Log::Event.ify(object, severity: __method__, rest: rest)
+        rest = { severity: __method__ } | rest
+        emit Log::Event.ify(object, **rest)
       end
     end
 
@@ -70,7 +74,8 @@ module Betterlog
     # @return [ Log ] this object itself.
     def fatal(object, **rest)
       protect do
-        emit Log::Event.ify(object, severity: __method__, rest: rest)
+        rest = { severity: __method__ } | rest
+        emit Log::Event.ify(object, **rest)
       end
     end
 
@@ -82,51 +87,12 @@ module Betterlog
     # @return [ Log ] this object itself.
     def output(object, **rest)
       protect do
-        emit Log::Event.ify(object, severity: rest[:severity], rest: rest)
+        emit Log::Event.ify(object, **rest)
       end
     end
 
-    # Logs a metric on severity debug, by default, this can be changed by passing
-    # the severity: keyword. +name+ is for example 'Donation.Confirmation' and
-    # +value+ can be any value, but has to be somewhat consistent in terms of
-    # structure with +name+ to allow for correct
-    # evaluation.
-    #
-    # @param name the name of the recorded metric.
-    # @param value of the recorded metric, defaults to duration if block was given.
-    # @param success a Proc with parameter +result+ that returns true iff block
-    #        result was asuccessful
-    # @param **rest additional rest is logged as well.
-    # @return [ Log ] this object itself.
     def metric(name:, value: nil, success: -> result { true }, **rest, &block)
-      result = time_block(&block)
-    rescue => error
-      e = Log::Event.ify(error)
-      rest |= e.as_json.subhash(:error_class, :backtrace, :message)
-      rest[:message] = "#{rest[:message].inspect} while measuring metric #{name}"
-      raise error
-    ensure
-      protect do
-        if timed_duration
-          rest[:duration] = timed_duration
-        end
-        event = build_metric(
-          name:     name,
-          value:    value || timed_duration,
-          success: success.(result),
-          **rest
-        )
-        emit event
-      end
-    end
-
-    def context(data_hash)
-      GlobalMetadata.add data_hash
-      self
-    end
-
-    def self.context(data_hash)
-      instance.context(data_hash)
+      warn "#{self.class}##{__method__} is deprecated"
     end
 
     def emit(event)
@@ -140,8 +106,6 @@ module Betterlog
       notify(event)
       logger.send(event.severity.to_sym, JSON.generate(event))
       self
-    ensure
-      GlobalMetadata.data.clear
     end
 
     private
@@ -163,7 +127,6 @@ module Betterlog
     end
 
     def build_metric(name:, value:, **rest)
-      severity = rest.fetch(:severity, :info)
       rest |= {
         message: "a metric #{name}=#{value}",
       }
@@ -173,7 +136,6 @@ module Betterlog
           value: value,
           type: 'metric'
         } | rest,
-        severity: severity
       )
     end
 

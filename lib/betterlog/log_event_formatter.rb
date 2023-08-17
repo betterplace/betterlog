@@ -48,6 +48,7 @@ module Betterlog
     rescue => e
       Betterlog::Log.logger.error(e)
     ensure
+      message = message.to_s
       # Do not "message << ?\n" - A frozen string may be passed in
       message.end_with?(?\n) or message = "#{message}\n"
       return message

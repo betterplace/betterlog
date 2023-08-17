@@ -1,22 +1,22 @@
 # -*- encoding: utf-8 -*-
-# stub: betterlog 1.1.1 ruby lib
+# stub: betterlog 2.0.0 ruby lib
 
 Gem::Specification.new do |s|
   s.name = "betterlog".freeze
-  s.version = "1.1.1"
+  s.version = "2.0.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0".freeze) if s.respond_to? :required_rubygems_version=
   s.require_paths = ["lib".freeze]
   s.authors = ["betterplace Developers".freeze]
-  s.date = "2023-08-16"
+  s.date = "2023-08-17"
   s.description = "This library provides structure json logging for our rails projects".freeze
   s.email = "developers@betterplace.org".freeze
   s.executables = ["betterlog".freeze]
   s.extra_rdoc_files = ["README.md".freeze, "lib/betterlog.rb".freeze, "lib/betterlog/global_metadata.rb".freeze, "lib/betterlog/log.rb".freeze, "lib/betterlog/log/event.rb".freeze, "lib/betterlog/log/event_formatter.rb".freeze, "lib/betterlog/log/severity.rb".freeze, "lib/betterlog/log_event_formatter.rb".freeze, "lib/betterlog/notifiers.rb".freeze, "lib/betterlog/railtie.rb".freeze, "lib/betterlog/version.rb".freeze]
-  s.files = [".github/workflows/codeql-analysis.yml".freeze, ".gitignore".freeze, ".semaphore/semaphore.yml".freeze, ".tool-versions".freeze, "Gemfile".freeze, "LICENSE".freeze, "README.md".freeze, "Rakefile".freeze, "VERSION".freeze, "betterlog.gemspec".freeze, "bin/betterlog".freeze, "config/log.yml".freeze, "lib/betterlog.rb".freeze, "lib/betterlog/global_metadata.rb".freeze, "lib/betterlog/log.rb".freeze, "lib/betterlog/log/event.rb".freeze, "lib/betterlog/log/event_formatter.rb".freeze, "lib/betterlog/log/severity.rb".freeze, "lib/betterlog/log_event_formatter.rb".freeze, "lib/betterlog/notifiers.rb".freeze, "lib/betterlog/railtie.rb".freeze, "lib/betterlog/version.rb".freeze, "spec/betterlog/global_metadata_spec.rb".freeze, "spec/betterlog/log/event_spec.rb".freeze, "spec/betterlog/log/severity_spec.rb".freeze, "spec/betterlog/log_event_formatter_spec.rb".freeze, "spec/betterlog/log_spec.rb".freeze, "spec/betterlog/version_spec.rb".freeze, "spec/spec_helper.rb".freeze]
+  s.files = [".all_images.yml".freeze, ".github/workflows/codeql-analysis.yml".freeze, ".gitignore".freeze, ".semaphore/semaphore.yml".freeze, ".tool-versions".freeze, "Gemfile".freeze, "LICENSE".freeze, "README.md".freeze, "Rakefile".freeze, "VERSION".freeze, "betterlog.gemspec".freeze, "bin/betterlog".freeze, "config/log.yml".freeze, "lib/betterlog.rb".freeze, "lib/betterlog/global_metadata.rb".freeze, "lib/betterlog/log.rb".freeze, "lib/betterlog/log/event.rb".freeze, "lib/betterlog/log/event_formatter.rb".freeze, "lib/betterlog/log/severity.rb".freeze, "lib/betterlog/log_event_formatter.rb".freeze, "lib/betterlog/notifiers.rb".freeze, "lib/betterlog/railtie.rb".freeze, "lib/betterlog/version.rb".freeze, "spec/betterlog/global_metadata_spec.rb".freeze, "spec/betterlog/log/event_spec.rb".freeze, "spec/betterlog/log/severity_spec.rb".freeze, "spec/betterlog/log_event_formatter_spec.rb".freeze, "spec/betterlog/log_spec.rb".freeze, "spec/betterlog/version_spec.rb".freeze, "spec/spec_helper.rb".freeze]
   s.homepage = "http://github.com/betterplace/betterlog".freeze
   s.rdoc_options = ["--title".freeze, "Betterlog".freeze, "--main".freeze, "README.md".freeze]
-  s.rubygems_version = "3.3.25".freeze
+  s.rubygems_version = "3.3.26".freeze
   s.summary = "Structured logging support for bp".freeze
   s.test_files = ["spec/betterlog/global_metadata_spec.rb".freeze, "spec/betterlog/log/event_spec.rb".freeze, "spec/betterlog/log/severity_spec.rb".freeze, "spec/betterlog/log_event_formatter_spec.rb".freeze, "spec/betterlog/log_spec.rb".freeze, "spec/betterlog/version_spec.rb".freeze, "spec/spec_helper.rb".freeze]
 
@@ -29,6 +29,8 @@ Gem::Specification.new do |s|
     s.add_development_dependency(%q<rake>.freeze, [">= 0"])
     s.add_development_dependency(%q<rspec>.freeze, [">= 0"])
     s.add_development_dependency(%q<simplecov>.freeze, [">= 0"])
+    s.add_development_dependency(%q<debug>.freeze, [">= 0"])
+    s.add_development_dependency(%q<all_images>.freeze, [">= 0"])
     s.add_runtime_dependency(%q<tins>.freeze, ["~> 1.3", ">= 1.22.0"])
     s.add_runtime_dependency(%q<complex_config>.freeze, [">= 0"])
     s.add_runtime_dependency(%q<file-tail>.freeze, ["~> 1.0"])
@@ -41,6 +43,8 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<rake>.freeze, [">= 0"])
     s.add_dependency(%q<rspec>.freeze, [">= 0"])
     s.add_dependency(%q<simplecov>.freeze, [">= 0"])
+    s.add_dependency(%q<debug>.freeze, [">= 0"])
+    s.add_dependency(%q<all_images>.freeze, [">= 0"])
     s.add_dependency(%q<tins>.freeze, ["~> 1.3", ">= 1.22.0"])
     s.add_dependency(%q<complex_config>.freeze, [">= 0"])
     s.add_dependency(%q<file-tail>.freeze, ["~> 1.0"])
