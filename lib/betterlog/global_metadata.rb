@@ -22,7 +22,7 @@ module Betterlog
 
     def with_meta(data = {}, &block)
       add data
-      block.call(current.dup.freeze)
+      block.call
     ensure
       remove data
     end
