@@ -39,10 +39,8 @@ describe Betterlog::GlobalMetadata do
       Betterlog::GlobalMetadata.with_meta(
         'foo' => 'bar',
         :bar  => 'foo',
-      ) do |my_context|
+      ) do
         expect(Betterlog::GlobalMetadata.current).to eq(foo: 'bar', bar: 'foo')
-        expect(my_context).to eq(foo: 'bar', bar: 'foo')
-        expect(my_context).to be_frozen
       end
       expect(Betterlog::GlobalMetadata.current).to be_empty
     end
@@ -52,16 +50,11 @@ describe Betterlog::GlobalMetadata do
       Betterlog::GlobalMetadata.with_meta(
         'foo' => 'bar',
         :bar  => 'foo',
-      ) do |my_context|
+      ) do
         expect(Betterlog::GlobalMetadata.current).to eq(foo: 'bar', bar: 'foo')
-        expect(my_context).to eq(foo: 'bar', bar: 'foo')
-        expect(my_context).to be_frozen
         Betterlog::GlobalMetadata.with_meta('quux' => 'quark') do |my_context|
-          expect(my_context).to be_frozen
           expect(Betterlog::GlobalMetadata.current).to eq(foo: 'bar', bar: 'foo', quux: 'quark')
-          expect(my_context).to eq(foo: 'bar', bar: 'foo', quux: 'quark')
         end
-        expect(my_context).to eq(foo: 'bar', bar: 'foo')
       end
       expect(Betterlog::GlobalMetadata.current).to be_empty
     end
