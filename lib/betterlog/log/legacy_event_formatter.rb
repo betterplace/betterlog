@@ -21,16 +21,13 @@ module Betterlog
             m = m.sub(/\s+$/, '')
 
             timestamp = timestamp.utc.iso8601(3)
-            event = Log::Event.new({
+            event = Log::Event.new(
               emitter:    emitter,
               timestamp:  timestamp,
               message:    m,
               severity:   severity.to_s.downcase,
               # tags:       current_tags,
-              meta: (
-                Sidekiq::Context.current&.symbolize_keys_recursive if defined?(Sidekiq::Context.current)
-              )}.compact
-                                  )
+            )
             backtrace = m.scan(/^\s*(?:[^:]+):(?:\d+).*$/)
             if backtrace.size > 1
               event[:backtrace] = backtrace.map { |b| b.sub(/\s+$/, '') }
