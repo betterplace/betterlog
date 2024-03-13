@@ -12,9 +12,9 @@ module ActiveSupport
     end
   end
 end
-require 'betterlog/log_event_formatter'
+require 'betterlog/log/legacy_event_formatter'
 
-describe Betterlog::LogEventFormatter do
+describe Betterlog::Log::LegacyEventFormatter do
   let :red do
     Term::ANSIColor.red { "red" }
   end
