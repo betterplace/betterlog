@@ -17,6 +17,7 @@ GemHadar do
   readme      'README.md'
   title       "#{name.camelize}"
   executables %w[ betterlog ]
+  licenses    << 'Apache-2.0'
 
   dependency 'tins',           '~>1.3', '>=1.22.0'
   dependency 'complex_config'
