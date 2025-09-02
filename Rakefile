@@ -14,10 +14,14 @@ GemHadar do
     '.ruby-version', '.AppleDouble', 'tags', '.DS_Store', '.utilsrc',
     '.bundle', '.byebug_history', 'errors.lst', '.yardoc', 'betterlog-server',
     'gospace'
+  package_ignore '.all_images.yml', '.utilsrc', '.rspec', '.tool-versions',
+    '.gitignore', *Dir['.semaphore/**/*'], *Dir['.github/**/*']
   readme      'README.md'
   title       "#{name.camelize}"
   executables %w[ betterlog ]
   licenses    << 'Apache-2.0'
+
+  required_ruby_version '~> 3.2'
 
   dependency 'tins',           '~>1.3', '>=1.22.0'
   dependency 'complex_config'
