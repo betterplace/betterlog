@@ -7,7 +7,43 @@ require 'zlib'
 require 'file/tail'
 
 module Betterlog
+  # The main application class responsible for processing command-line arguments,
+  # configuring log filtering and formatting options, and orchestrating the core
+  # log processing workflow.
+  #
+  # This class serves as the entry point for the betterlog CLI tool. It handles
+  # argument parsing, configuration of filters (severity, search terms, emitters),
+  # and manages the different modes of operation including file following,
+  # stdin filtering, and file-based processing.
+  #
+  # The application supports various features such as:
+  # - Real-time log file monitoring with -f flag
+  # - Severity-based filtering with -S flag
+  # - Search term matching with -s flag
+  # - Configuration file shortcuts with -F flag
+  # - Pretty-printing with color support via -p and -c flags
+  # - Support for gzipped log files
+  # - Multiple log source handling
+  #
+  # Example usage:
+  #   # Follow Rails logs in long format with colors for errors or greater
+  #   $ betterlog -f -F rails -p long -c -S ">=error"
+  #
+  #   # Match any event containing SELECT
+  #   $ betterlog -f -s SELECT
+  #
+  #   # Follow multiple log files with default format in colors
+  #   $ betterlog -f -F rails -F redis -pd -c -n 10
   class App
+    # Initializes a new instance with command-line arguments.
+    #
+    # This constructor sets up the object by processing command-line arguments,
+    # configuring options for filtering and formatting, and preparing the
+    # internal state for log processing operations.
+    #
+    # @param args [ Array<String> ] an array of command-line arguments to be
+    # processed @return [ Betterlog::CLI ] returns the initialized instance
+    # itself
     def initialize(args = ARGV.dup)
       STDOUT.sync = true
       @args = args
@@ -16,8 +52,17 @@ module Betterlog
       @opts[?h] and usage
     end
 
+    # Displays the usage information and help text for the betterlog command.
+    #
+    # This method outputs a formatted help message that describes the available
+    # command-line options, format specifiers, severity levels, and configuration
+    # file shortcuts for the betterlog tool. It provides examples of common usage
+    # patterns and then exits the program with a success status.
+    #
+    # @see Betterlog::Log::Severity#all
+    # @see ComplexConfig::Settings#attribute_names
     def usage
-      puts <<~end
+      puts <<~EOT
         Usage: #{prog} [OPTIONS] [LOGFILES]
 
         Options are
@@ -70,11 +115,17 @@ module Betterlog
 
             $ betterlog -n 10 unicorn.log
 
-      end
+      EOT
       exit(0)
     end
 
     private\
+    # Filters log severities based on command-line options.
+    #
+    # This method processes the configured severity filters from the options hash,
+    # applying inclusive and exclusive selection criteria to narrow down the
+    # available severity levels. It supports comparison operators for range-based
+    # filtering and exact matches for specific severities.
     def filter_severities
       @severities = Log::Severity.all
       if severity = @opts[?S]
@@ -90,14 +141,37 @@ module Betterlog
       end
     end
 
+    # Returns the base name of the current program file.
+    #
+    # This method extracts and returns the file name portion of the script
+    # being executed, excluding any directory path components.
+    #
+    # @return [ String ] the base name of the current program file
     def prog
       File.basename($0)
     end
 
+    # Returns the emitters option value as an array.
+    #
+    # This method retrieves the emitters option from the internal options hash
+    # and ensures it is returned as an array format, even if it was originally
+    # provided as a single value.
+    #
+    # @return [ Array ] the array of emitters, or an empty array if none were
+    # specified
     def emitters
       Array(@opts[?e])
     end
 
+    # Checks if a log event matches the specified search criteria.
+    #
+    # This method evaluates whether a given log event satisfies the search
+    # parameters defined in the instance options. It supports searching within
+    # nested hash values and direct string matching against the JSON
+    # representation of the event.
+    #
+    # @param event [ Betterlog::Log::Event ] the log event to be checked against the search criteria
+    # @return [ TrueClass, FalseClass ] true if the event matches all search criteria, false otherwise
     def search_matched?(event)
       return true unless @opts[?s]
       @opts[?s].all? do |param|
@@ -114,6 +188,15 @@ module Betterlog
       end
     end
 
+    # Outputs a formatted log event to the console based on configured options and filters.
+    #
+    # This method processes a log event by checking if it matches the configured severity
+    # levels, emitters, and search criteria. If the event passes all filters, it formats
+    # the event according to the specified output options and prints it to standard output.
+    # The formatting can be JSON, a custom format, or a simple string representation.
+    #
+    # @param prefix [ String ] A string to prepend to the formatted event output
+    # @param event [ Betterlog::Log::Event ] The log event to be processed and displayed
     def output_log_event(prefix, event)
       return unless @severities.include?(event.severity)
       return if emitters.full? && !emitters.include?(event.emitter)
@@ -128,6 +211,17 @@ module Betterlog
       end
     end
 
+    # Parses a log line and outputs it as a structured event or plain text.
+    #
+    # This method processes a log line by attempting to parse it as a
+    # structured log event. If parsing succeeds, the event is formatted and
+    # displayed with an optional filename prefix. If the line doesn't match the
+    # expected structured format but appears to have an ISO timestamp prefix,
+    # it creates a new event from that data. Otherwise, the raw line is output
+    # as-is unless error handling is enabled.
+    #
+    # @param l [ String ] the log line to process
+    # @param filename [ String, nil ] the name of the file the log line came from
     def output_log_line(l, filename)
       l.blank? and return
       prefix =
@@ -152,6 +246,16 @@ module Betterlog
       @opts[?e] or puts "#{prefix}#{l}"
     end
 
+    # Processes configuration file arguments based on command-line options and
+    # configuration settings.
+    #
+    # This method handles the logic for resolving and expanding configuration
+    # file references provided via the -F command-line flag or falling back to
+    # default Rails configuration files. It ensures that the resulting argument
+    # list contains unique filenames after processing.
+    #
+    # @param args [ Array<String> ] The array of arguments to be processed
+    # @return [ Array<String> ] The processed and deduplicated array of filenames
     def query_config_file_configuration
       if @opts[?F]
         if cfs = cc.log.config_files?
@@ -172,6 +276,16 @@ module Betterlog
       @args.uniq!
     end
 
+    # Follows log files and outputs their contents in real-time.
+    #
+    # This method sets up a file tailing mechanism to monitor specified log
+    # files for new content. It creates a group of files to tail, configures
+    # the polling interval, and starts a background thread to process new lines
+    # as they are written to the files. The method handles cases where files do
+    # not exist by outputting a warning message and skipping those files.
+    #
+    # @see File::Tail::Group
+    # @see File::Tail::File
     def follow_files
       group = File::Tail::Group.new
       @args.each do |f|
@@ -189,6 +303,16 @@ module Betterlog
     rescue Interrupt
     end
 
+    # Filters log files from command line arguments, processing each file line
+    # by line.
+    #
+    # This method iterates over the provided file paths, checking their
+    # existence and processing them accordingly. For gzipped files, it uses
+    # Zlib::GzipReader to decompress and read the content. For regular files,
+    # it uses File::Tail::Logfile to read the lines. Each line is then passed
+    # to the output_log_line method for further processing.
+    #
+    # @param args [ Array<String> ] An array of file paths to be processed
     def filter_argv
       for fn in @args
         unless File.exist?(fn)
@@ -212,12 +336,25 @@ module Betterlog
       end
     end
 
+    # Processes each line from standard input and outputs formatted log lines.
+    #
+    # This method reads all lines from STDIN and passes each line to the
+    # output_log_line method for processing and formatting. It is typically
+    # used to filter or transform log data coming from stdin before outputting
+    # it.
+    #
+    # @param _ [ nil ] This method does not require any parameters
     def filter_stdin
       STDIN.each_line do |l|
         output_log_line(l, nil)
       end
     end
 
+    # Outputs log source information to standard error.
+    #
+    # This method prints information about the log sources being tracked to
+    # standard error, including whether stdin or specific files are being
+    # monitored, along with the configured severity levels.
     def output_log_sources
       if @args.empty?
         STDERR.puts "#{prog} tracking stdin\nseverities: #{@severities * ?|}"
@@ -228,6 +365,14 @@ module Betterlog
       end
     end
 
+    # Runs the main application logic based on command-line options and
+    # arguments.
+    #
+    # This method orchestrates the core functionality of the application by
+    # determining the appropriate logging behavior based on the provided
+    # command-line flags and input sources. It handles file following,
+    # filtering from standard input, or filtering from command-line arguments
+    # depending on the configuration.
     def run
       if @opts[?f]
         query_config_file_configuration
