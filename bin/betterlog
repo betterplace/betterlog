@@ -119,14 +119,13 @@ module Betterlog
       exit(0)
     end
 
-    private\
     # Filters log severities based on command-line options.
     #
     # This method processes the configured severity filters from the options hash,
     # applying inclusive and exclusive selection criteria to narrow down the
     # available severity levels. It supports comparison operators for range-based
     # filtering and exact matches for specific severities.
-    def filter_severities
+    private def filter_severities
       @severities = Log::Severity.all
       if severity = @opts[?S]
         severity.each do |s|
