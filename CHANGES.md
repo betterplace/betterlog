@@ -1,5 +1,17 @@
 # Changes
 
+## 2025-09-02 v2.1.1
+
+- Set required Ruby version to ~> **3.2** in both `Rakefile` and
+  `betterlog.gemspec`
+- Added `.all_images.yml`, `.tool-versions`, `.gitignore`, and files under
+  `.semaphore/` and `.github/` to package_ignore in `Rakefile`
+- Added comprehensive documentation to the `Betterlog::App` class, including
+  detailed class documentation, method documentation with parameters and return
+  values, and improved code organization with comments
+- Removed ruby version **3.1** from the image list in `.all_images.yml`
+- Added `CHANGES.md` file to document project history and version updates
+
 ## 2025-09-02 v2.1.0
 
 - Improved documentation and added comprehensive comments throughout Betterlog
