@@ -1,5 +1,9 @@
 # Changes
 
+## 2025-09-02 v2.1.2
+
+- Moved only `filter_severities` method to private scope
+
 ## 2025-09-02 v2.1.1
 
 - Set required Ruby version to ~> **3.2** in both `Rakefile` and
