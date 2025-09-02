@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = Gem::Requirement.new(">= 0".freeze) if s.respond_to? :required_rubygems_version=
   s.require_paths = ["lib".freeze]
   s.authors = ["betterplace Developers".freeze]
-  s.date = "2025-02-19"
+  s.date = "1980-01-02"
   s.description = "This library provides structure json logging for our rails projects".freeze
   s.email = "developers@betterplace.org".freeze
   s.executables = ["betterlog".freeze]
@@ -17,13 +17,13 @@ Gem::Specification.new do |s|
   s.homepage = "http://github.com/betterplace/betterlog".freeze
   s.licenses = ["Apache-2.0".freeze]
   s.rdoc_options = ["--title".freeze, "Betterlog".freeze, "--main".freeze, "README.md".freeze]
-  s.rubygems_version = "3.6.2".freeze
+  s.rubygems_version = "3.6.9".freeze
   s.summary = "Structured logging support for bp".freeze
   s.test_files = ["spec/betterlog/global_metadata_spec.rb".freeze, "spec/betterlog/log/event_spec.rb".freeze, "spec/betterlog/log/legacy_event_formatter_spec.rb".freeze, "spec/betterlog/log/severity_spec.rb".freeze, "spec/betterlog/log_spec.rb".freeze, "spec/betterlog/version_spec.rb".freeze, "spec/spec_helper.rb".freeze]
 
   s.specification_version = 4
 
-  s.add_development_dependency(%q<gem_hadar>.freeze, ["~> 1.19".freeze])
+  s.add_development_dependency(%q<gem_hadar>.freeze, ["~> 1.28".freeze])
   s.add_development_dependency(%q<rake>.freeze, [">= 0".freeze])
   s.add_development_dependency(%q<rspec>.freeze, [">= 0".freeze])
   s.add_development_dependency(%q<simplecov>.freeze, [">= 0".freeze])
