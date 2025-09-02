@@ -1,9 +1,9 @@
 # -*- encoding: utf-8 -*-
-# stub: betterlog 2.0.6 ruby lib
+# stub: betterlog 2.1.0 ruby lib
 
 Gem::Specification.new do |s|
   s.name = "betterlog".freeze
-  s.version = "2.0.6".freeze
+  s.version = "2.1.0".freeze
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0".freeze) if s.respond_to? :required_rubygems_version=
   s.require_paths = ["lib".freeze]
