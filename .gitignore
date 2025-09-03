@@ -10,6 +10,7 @@
 Gemfile.lock
 betterlog-server
 coverage
+doc
 errors.lst
 gospace
 pkg

@@ -12,8 +12,8 @@ GemHadar do
   test_dir    'spec'
   ignore      '.*.sw[pon]', 'pkg', 'Gemfile.lock', 'coverage', '.rvmrc',
     '.ruby-version', '.AppleDouble', 'tags', '.DS_Store', '.utilsrc',
-    '.bundle', '.byebug_history', 'errors.lst', '.yardoc', 'betterlog-server',
-    'gospace'
+    '.bundle', '.byebug_history', 'errors.lst', '.yardoc', 'doc',
+    'betterlog-server', 'gospace'
   package_ignore '.all_images.yml', '.utilsrc', '.rspec', '.tool-versions',
     '.gitignore', *Dir['.semaphore/**/*'], *Dir['.github/**/*']
   readme      'README.md'
