@@ -109,18 +109,54 @@ module Betterlog
         end
       end
 
-      # Formats a log event using a specified pattern with support for
-      # directives and colorization.
+      # Formats a log event using a specified pattern with support for directives and colorization.
       #
-      # This method processes a format string by replacing placeholders with
-      # actual event data, applying formatting directives for special handling
-      # of values like objects or timestamps, and optionally applying color
-      # styling based on configured styles.
+      # This method processes a format string by replacing placeholders with actual event data,
+      # applying formatting directives for special handling of values like objects or timestamps,
+      # and optionally applying color styling based on configured styles.
       #
-      # @param format [ String ] the format pattern to apply to the log event
-      # @return [ String ] the formatted string representation of the log event
+      # <b>Format Pattern Syntax</b>
+      #
+      # Format patterns use curly braces `{}` to define placeholders with optional directives:
+      #
+      # <b>Basic Key Substitution</b>
+      # - `{key}` - Substitutes the value of `@event[key]`
+      # - `{-key}` - Invisible variant; omits output when value is nil (instead of showing `{key}`)
+      #
+      # <b>Object Formatting Directives</b>
+      # - `{%O%key}` - Formats complex objects (arrays/hashes) with nested structure visualization
+      #   Example: Shows arrays with bullet points and hashes with key-value pairs
+      #
+      # <b>Timestamp Formatting Directives</b>
+      # - `{%t%key}` - Formats timestamp values with various time formats based on flag:
+      #   - `%ut%key` - UTC ISO8601 format (e.g., "2023-12-01T10:30:45.123Z")
+      #   - `%lt%key` - Local time ISO8601 format
+      #   - `%it%key` - Unix timestamp integer (e.g., "1701423425")
+      #   - `%ft%key` - Unix timestamp float (e.g., "1701423425.123")
+      #   - `%t%key` (default) - UTC ISO8601 format
+      #
+      # <b>String Formatting Directives</b>
+      # - `{%.format%key}` - Applies Ruby string formatting using the `%` operator
+      #   Example: `{%.2f%price}` formats a float to 2 decimal places
+      #
+      # <b>Colorization</b>
+      # Values are automatically colorized based on configured styles in the `styles` configuration.
+      # For example, timestamp values use yellow/bold styling, and severity levels use different colors
+      # based on their value (debug=green, warn=yellow, error=red, etc.).
+      #
+      # @param format [String] the format pattern to apply to the log event
+      # @return [String] the formatted string representation of the log event
       # @see Betterlog::Log::EventFormatter#format_object
       # @see Betterlog::Log::EventFormatter#colorize
+      #
+      # @example Basic usage with default configuration
+      #   formatter.format_pattern(format: "{%lt%timestamp} {message}")
+      #
+      # @example Complex formatting with object display
+      #   formatter.format_pattern(format: "{%O%backtrace} {message}")
+      #
+      # @example Conditional display of optional fields
+      #   formatter.format_pattern(format: "{file}{-%O%backtrace}")
       def format_pattern(format:)
         format.
           gsub('\n', "\n").
