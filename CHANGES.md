@@ -1,5 +1,11 @@
 # Changes
 
+## 2025-09-03 v2.1.3
+
+- Improved documentation for the `colorize` method with detailed styling examples
+- Enhanced documentation for the `format_pattern` method with a detailed syntax guide
+- Added `doc` directory to `.gitignore` and updated `Rakefile` to include it in the ignore list
+
 ## 2025-09-02 v2.1.2
 
 - Moved only `filter_severities` method to private scope
