@@ -65,15 +65,48 @@ module Betterlog
       #
       # This method applies visual styling to a string by looking up the
       # appropriate style configuration based on the provided key and value,
-      # then applying that style using the internal apply_style method.
+      # then applying that style using the internal apply_style method. The
+      # colorization logic supports both static and dynamic styling based on
+      # the value being formatted.
       #
-      # @param key [ Object ] the lookup key for determining the style
-      # configuration
-      # @param value [ Object ] the value used to determine which specific
-      # style to apply
-      # @param string [ Object ] the string to be colorized, defaults to the
-      # key if not provided
-      # @return [ String ] the colorized string based on the configured styles
+      # <b>Style Configuration Patterns</b>
+      #
+      # Styles can be configured in several ways:
+      #
+      # <b>Static Styles</b>
+      # - String: Single ANSI color code (e.g., "red", "bold")
+      # - Array: Multiple ANSI codes (e.g., ["red", "bold"])
+      #
+      # <b>Dynamic Styles</b>
+      # - ComplexConfig::Settings: Different styles based on value content
+      #   Example: { debug: "green", error: "red" } where the style is selected based on the value
+      #
+      # <b>Usage Examples</b>
+      #
+      # Given a configuration like:
+      #   styles:
+      #     'timestamp': [ yellow, bold ]
+      #     severity:
+      #       debug: green
+      #       info: green
+      #       warn:  yellow
+      #       error: red
+      #
+      # The method will:
+      # - Colorize "{timestamp}" with yellow/bold styling
+      # - Colorize "{severity}" with green for "debug"/"info", yellow for "warn", red for "error"
+      #
+      # @param key [Object] the lookup key for determining the style configuration
+      # @param value [Object] the value used to determine which specific style to apply
+      # @param string [Object] the string to be colorized, defaults to the key if not provided
+      # @return [String] the colorized string based on the configured styles
+      # @see Betterlog::Log::EventFormatter#apply_style
+      #
+      # @example Static styling
+      #   colorize(:timestamp, nil, "2023-12-01")  # Returns colored timestamp string
+      #
+      # @example Dynamic styling based on value
+      #   colorize(:severity, :error, "ERROR")    # Returns red-colored string
       def colorize(key, value, string = key)
         case style = cc.log.styles[key]
         when nil, String, Array
