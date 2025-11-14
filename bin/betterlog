@@ -258,7 +258,7 @@ module Betterlog
     def query_config_file_configuration
       if @opts[?F]
         if cfs = cc.log.config_files?
-          @opts[?F].each do |f|
+          @opts[?F].to_a.each do |f|
             @args.concat cfs[f]
           end
         else

@@ -23,7 +23,7 @@ GemHadar do
 
   required_ruby_version '~> 3.2'
 
-  dependency 'tins',           '~>1.3', '>=1.22.0'
+  dependency 'tins',           '~>1.47'
   dependency 'complex_config'
   dependency 'file-tail',      '~>1.0'
   dependency 'json',           '~>2.0'
