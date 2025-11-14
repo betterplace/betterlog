@@ -1,5 +1,5 @@
 dockerfile: |-
-  RUN apk add --no-cache yaml-dev build-base git
+  RUN apk add --no-cache yaml-dev build-base git openssl-dev
   RUN gem install gem_hadar
 
 script: &script |-
