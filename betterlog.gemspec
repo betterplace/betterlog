@@ -1,9 +1,9 @@
 # -*- encoding: utf-8 -*-
-# stub: betterlog 2.1.4 ruby lib
+# stub: betterlog 2.2.0 ruby lib
 
 Gem::Specification.new do |s|
   s.name = "betterlog".freeze
-  s.version = "2.1.4".freeze
+  s.version = "2.2.0".freeze
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0".freeze) if s.respond_to? :required_rubygems_version=
   s.require_paths = ["lib".freeze]
@@ -30,7 +30,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency(%q<simplecov>.freeze, [">= 0".freeze])
   s.add_development_dependency(%q<debug>.freeze, [">= 0".freeze])
   s.add_development_dependency(%q<all_images>.freeze, [">= 0".freeze])
-  s.add_runtime_dependency(%q<tins>.freeze, ["~> 1.3".freeze, ">= 1.22.0".freeze])
+  s.add_runtime_dependency(%q<tins>.freeze, ["~> 1.47".freeze])
   s.add_runtime_dependency(%q<complex_config>.freeze, [">= 0".freeze])
   s.add_runtime_dependency(%q<file-tail>.freeze, ["~> 1.0".freeze])
   s.add_runtime_dependency(%q<json>.freeze, ["~> 2.0".freeze])
