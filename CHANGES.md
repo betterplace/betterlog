@@ -1,5 +1,23 @@
 # Changes
 
+## 2025-11-14 v2.2.0
+
+- Updated `tins` runtime dependency from "~> 1.3" with ">= 1.22.0" to "~> 1.47"
+- Modified `@opts[?F]` to `@opts[?F].to_a` in `betterlog` binary to ensure
+  proper array handling
+- Updated `gem_hadar` development dependency from version **1.28** to **2.8**
+- Added `openssl-dev` to the list of packages installed via `apk add` in
+  Dockerfile
+- The change affects the `dockerfile` section in `.all_images.yml`
+
+## 2025-09-04 v2.1.4
+
+- Updated gem version to **2.1.4** across all relevant files
+- Modified `VERSION` file to reflect new version **2.1.4**
+- Updated `betterlog.gemspec` to use version **2.1.4** in gem specification
+- Changed `lib/betterlog/version.rb` to set `VERSION` constant to **2.1.4**
+- Completely rewrote `README.md` with comprehensive documentation
+
 ## 2025-09-03 v2.1.3
 
 - Improved documentation for the `colorize` method with detailed styling examples
