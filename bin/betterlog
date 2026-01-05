@@ -127,7 +127,7 @@ module Betterlog
     # filtering and exact matches for specific severities.
     private def filter_severities
       @severities = Log::Severity.all
-      if severity = @opts[?S]
+      if severity = @opts[?S]&.to_a
         severity.each do |s|
           if s =~ /\A(>=?|<=?)(.+)/
             gs = Log::Severity.new($2)
