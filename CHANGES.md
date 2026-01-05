@@ -1,5 +1,17 @@
 # Changes
 
+## 2026-01-05 v2.2.1
+
+- Migrated all CI/CD pipelines from Ubuntu 20.04 to Ubuntu **24.04**
+- Updated `gem_hadar` development dependency to **2.16.3** or higher
+- Added `changelog` configuration to `Rakefile` to generate `CHANGES.md`
+- Improved severity filtering
+    - Improved robustness by using safe navigation operator
+      (`&.`) when accessing `@opts[?S]`
+    - Enhanced severity handling by explicitly converting severities into array
+    - Ensured severity filtering works correctly even when no severity options are
+      provided
+
 ## 2025-11-14 v2.2.0
 
 - Updated `tins` runtime dependency from "~> 1.3" with ">= 1.22.0" to "~> 1.47"
