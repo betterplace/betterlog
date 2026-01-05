@@ -21,6 +21,10 @@ GemHadar do
   executables %w[ betterlog ]
   licenses    << 'Apache-2.0'
 
+  changelog do
+    filename 'CHANGES.md'
+  end
+
   required_ruby_version '~> 3.2'
 
   dependency 'tins',           '~>1.47'
