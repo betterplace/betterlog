@@ -1,5 +1,15 @@
 # Changes
 
+## 2026-01-08 v2.3.0
+
+- Updated `required_ruby_version` from `~> 3.2` to `>= 3.2` in `Rakefile` and
+  `betterlog.gemspec`
+- Added `readline-dev` to Dockerfile for readline support
+- Replaced `bundle` and `rake spec` with `bundle update --all`, `bundle
+  install`, and `bundle exec rake spec` in `.all_images.yml`
+- Added Ruby **4.0-alpine** support to CI matrix
+- Updated `Gemfile` to use `>= 3.2` for `required_ruby_version`
+
 ## 2026-01-05 v2.2.1
 
 - Migrated all CI/CD pipelines from Ubuntu 20.04 to Ubuntu **24.04**
