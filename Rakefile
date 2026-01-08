@@ -25,7 +25,7 @@ GemHadar do
     filename 'CHANGES.md'
   end
 
-  required_ruby_version '~> 3.2'
+  required_ruby_version '>= 3.2'
 
   dependency 'tins',           '~>1.47'
   dependency 'complex_config'

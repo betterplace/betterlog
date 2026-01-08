@@ -6,12 +6,14 @@ script: &script |-
   echo -e "\e[1m"
   ruby -v
   echo -e "\e[0m"
-  bundle
-  rake spec
+  bundle update --all
+  bundle install
+  bundle exec rake spec
 
 fail_fast: yes
 
 images:
+  ruby:4.0-alpine: *script
   ruby:3.4-alpine: *script
   ruby:3.3-alpine: *script
   ruby:3.2-alpine: *script

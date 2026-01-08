@@ -17,7 +17,7 @@ Gem::Specification.new do |s|
   s.homepage = "http://github.com/betterplace/betterlog".freeze
   s.licenses = ["Apache-2.0".freeze]
   s.rdoc_options = ["--title".freeze, "Betterlog".freeze, "--main".freeze, "README.md".freeze]
-  s.required_ruby_version = Gem::Requirement.new("~> 3.2".freeze)
+  s.required_ruby_version = Gem::Requirement.new(">= 3.2".freeze)
   s.rubygems_version = "3.6.9".freeze
   s.summary = "Structured logging support for bp".freeze
   s.test_files = ["spec/betterlog/global_metadata_spec.rb".freeze, "spec/betterlog/log/event_spec.rb".freeze, "spec/betterlog/log/legacy_event_formatter_spec.rb".freeze, "spec/betterlog/log/severity_spec.rb".freeze, "spec/betterlog/log_spec.rb".freeze, "spec/betterlog/version_spec.rb".freeze, "spec/spec_helper.rb".freeze]
