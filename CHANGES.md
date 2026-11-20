@@ -1,5 +1,42 @@
 # Changes
 
+## 2026-11-20 v2.4.0
+
+### Fixes
+
+- Corrected YARD documentation accuracy across multiple files:
+  - Removed redundant `@return [ void ]` tag from
+    `Betterlog::GlobalMetadata#remove`.
+  - Broadened `@return` for `Betterlog::Log::Event.is?` to `[ Boolean, nil ]`
+    and clarified the `nil` return case.
+  - Updated `@param rest` documentation for `Betterlog::Log::Event.ify` and
+    `Betterlog::Log` methods (`info`, `warn`, `debug`, `error`, `fatal`,
+    `output`) to use specific `@option` tags for `:meta`, `:severity`, and
+    `:notify`, with a `@note` for additional keyword arguments.
+  - Escaped braces in `Betterlog::Log::EventFormatter#colorize` documentation
+    to prevent misparsing of log-format DSL syntax.
+  - Updated `Betterlog::Notifiers.notify` documentation to accurately reflect
+    the implementation.
+
+### Improvements
+
+- Optimized `Betterlog::Notifiers.notify` to serialize the event JSON once and
+  hoist context setting out of the notifier loop, reducing complexity from
+  O(N²) to O(N).
+- Removed dead code `Betterlog::Log#build_metric` which had no call sites.
+
+### Build & CI
+
+- Updated Ruby version from **3.4.8** to **3.4.13** in `.tool-versions`
+  (picks up the 18 Nov 2026 Ruby advisory: 7 RCE-grade Regexp/String
+  case-conversion GHSAs + ~46 memory-safety fixes).
+- Updated `gem_hadar` development dependency constraint from `>= 2.16.3` to `>=
+  2.24.1` in `betterlog.gemspec`.
+- Regenerated `lib/betterlog/version.rb`, `Gemfile`, and `Rakefile` via
+  `gem_hadar`, removing stale vim modeline comments.
+- Updated ignore patterns in `Rakefile` and `.gitignore` to replace
+  `betterlog-server` and `gospace` with `cscope.out`.
+
 ## 2026-01-08 v2.3.0
 
 - Updated `required_ruby_version` from `~> 3.2` to `>= 3.2` in `Rakefile` and
