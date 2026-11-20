@@ -42,7 +42,6 @@ module Betterlog
     #
     # @param data [ Hash, Array ] A hash containing keys to remove or an array
     # of key symbols
-    # @return [ void ] Returns nil after removing the specified keys
     def remove(data)
       keys = data.ask_and_send_or_self(:keys).map(&:to_sym)
       keys.each { current.delete(_1) }

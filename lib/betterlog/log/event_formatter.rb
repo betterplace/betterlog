@@ -93,8 +93,8 @@ module Betterlog
       #       error: red
       #
       # The method will:
-      # - Colorize "{timestamp}" with yellow/bold styling
-      # - Colorize "{severity}" with green for "debug"/"info", yellow for "warn", red for "error"
+      # - Colorize "\\{timestamp\\}" with yellow/bold styling
+      # - Colorize "\\{severity\\}" with green for "debug"/"info", yellow for "warn", red for "error"
       #
       # @param key [Object] the lookup key for determining the style configuration
       # @param value [Object] the value used to determine which specific style to apply

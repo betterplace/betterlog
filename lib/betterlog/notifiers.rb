@@ -36,16 +36,17 @@ module Betterlog
     # Notifies registered notifiers with the event data.
     #
     # This method checks if the provided event has notification enabled,
-    # and if so, iterates through all registered notifiers to send them
-    # the event's message and metadata. It also updates the context for
-    # each notifier before sending the notification.
+    # and if so, serializes the event once, applies it as context to all
+    # registered notifiers via `context`, then iterates through them to send
+    # each one its message and metadata.
     #
     # @param event [Betterlog::Log::Event] the log event to be notified about
     def self.notify(event)
       event.notify? or return
+      event_json = event.as_json
+      context(event_json)
       notifiers.each do |notifier|
-        context(event.as_json)
-        notifier.notify(event[:message], event.as_json)
+        notifier.notify(event[:message], event_json)
       end
     end
 

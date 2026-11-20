@@ -38,7 +38,10 @@ module Betterlog
     # Logs a message on severity info.
     #
     # @param object this object is logged
-    # @param rest additional data is logged as well.
+    # @option rest [ Hash ] :meta thread-global metadata merged into the event
+    # @option rest [ Symbol ] :severity severity override (default: :info)
+    # @option rest [ Boolean ] :notify whether to trigger registered notifiers (default: false)
+    # @note Additional keyword arguments are passed through into the event data as-is.
     # @return [ Log ] this object itself.
     def info(object, **rest)
       protect do
@@ -50,7 +53,10 @@ module Betterlog
     # Logs a message on severity warn.
     #
     # @param object this object is logged
-    # @param rest additional data is logged as well.
+    # @option rest [ Hash ] :meta thread-global metadata merged into the event
+    # @option rest [ Symbol ] :severity severity override (default: :warn)
+    # @option rest [ Boolean ] :notify whether to trigger registered notifiers (default: false)
+    # @note Additional keyword arguments are passed through into the event data as-is.
     # @return [ Log ] this object itself.
     def warn(object, **rest)
       protect do
@@ -62,7 +68,10 @@ module Betterlog
     # Logs a message on severity debug.
     #
     # @param object this object is logged
-    # @param rest additional data is logged as well.
+    # @option rest [ Hash ] :meta thread-global metadata merged into the event
+    # @option rest [ Symbol ] :severity severity override (default: :debug)
+    # @option rest [ Boolean ] :notify whether to trigger registered notifiers (default: false)
+    # @note Additional keyword arguments are passed through into the event data as-is.
     # @return [ Log ] this object itself.
     def debug(object, **rest)
       protect do
@@ -74,7 +83,10 @@ module Betterlog
     # Logs a message on severity error.
     #
     # @param object this object is logged
-    # @param rest additional data is logged as well.
+    # @option rest [ Hash ] :meta thread-global metadata merged into the event
+    # @option rest [ Symbol ] :severity severity override (default: :error)
+    # @option rest [ Boolean ] :notify whether to trigger registered notifiers (default: false)
+    # @note Additional keyword arguments are passed through into the event data as-is.
     # @return [ Log ] this object itself.
     def error(object, **rest)
       protect do
@@ -86,7 +98,10 @@ module Betterlog
     # Logs a message on severity fatal.
     #
     # @param object this object is logged
-    # @param rest additional data is logged as well.
+    # @option rest [ Hash ] :meta thread-global metadata merged into the event
+    # @option rest [ Symbol ] :severity severity override (default: :fatal)
+    # @option rest [ Boolean ] :notify whether to trigger registered notifiers (default: false)
+    # @note Additional keyword arguments are passed through into the event data as-is.
     # @return [ Log ] this object itself.
     def fatal(object, **rest)
       protect do
@@ -99,7 +114,10 @@ module Betterlog
     # passing the severity: keyword.
     #
     # @param object this object is logged
-    # @param rest additional data is logged as well.
+    # @option rest [ Hash ] :meta thread-global metadata merged into the event
+    # @option rest [ Symbol ] :severity severity override (default: :debug)
+    # @option rest [ Boolean ] :notify whether to trigger registered notifiers (default: false)
+    # @note Additional keyword arguments are passed through into the event data as-is.
     # @return [ Log ] this object itself.
     def output(object, **rest)
       protect do
@@ -146,19 +164,6 @@ module Betterlog
         )
       end
       self
-    end
-
-    def build_metric(name:, value:, **rest)
-      rest |= {
-        message: "a metric #{name}=#{value}",
-      }
-      Log::Event.ify(
-        {
-          name:  name,
-          value: value,
-          type: 'metric'
-        } | rest,
-      )
     end
 
     def notify(event)

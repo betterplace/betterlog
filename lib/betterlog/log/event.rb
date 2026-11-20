@@ -23,7 +23,10 @@ module Betterlog
       # where necessary.
       #
       # @param arg [ Object ] the input argument to be converted into a log event
-      # @param rest [ Hash ] additional key-value pairs to be merged into the resulting event
+      # @option rest [ Hash ] :meta thread-global metadata merged into the event
+      # @option rest [ Symbol ] :severity severity override (default: inferred from the calling method)
+      # @option rest [ Boolean ] :notify whether to trigger registered notifiers (default: false)
+      # @note Additional keyword arguments are passed through into the event data as-is.
       # @return [ Betterlog::Log::Event ] a new log event instance created from the input argument
       def self.ify(arg, **rest)
         rest = rest.symbolize_keys_recursive(circular: :circular)
@@ -66,11 +69,14 @@ module Betterlog
       # This method attempts to parse a JSON string and determine whether it
       # contains a log event structure by checking for the presence of an
       # 'emitter' key in the parsed data. It returns true if the JSON is valid
-      # and contains the emitter key, false otherwise.
+      # and contains the emitter key, false if the JSON is valid but has no
+      # emitter key (or parsing fails), and nil if the argument is not a
+      # string and cannot be converted to one.
       #
       # @param json [ String ] A JSON-formatted string to check
-      # @return [ Boolean ] true if the JSON represents a log event with
-      # emitter data, false if not or if parsing fails
+      # @return [ Boolean, nil ] true if the JSON represents a log event with
+      # emitter data, false if not or if parsing fails, nil if the argument is
+      # not string-convertible
       def self.is?(json)
         if json = json.ask_and_send(:to_str)
           data = JSON.parse(json).ask_and_send(:to_hash)
