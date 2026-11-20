@@ -28,9 +28,8 @@ GemHadar do
   dependency 'tins',           '~>1.47'
   dependency 'complex_config'
   dependency 'file-tail',      '~>1.0'
-  dependency 'json',           '~>2.0'
+  dependency 'json',           '>=2.0', '<4'
   dependency 'term-ansicolor', '~>1.3'
-  dependency 'redlock'
   dependency 'excon'
 
   development_dependency 'rake'

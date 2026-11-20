@@ -33,8 +33,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency(%q<tins>.freeze, ["~> 1.47".freeze])
   s.add_runtime_dependency(%q<complex_config>.freeze, [">= 0".freeze])
   s.add_runtime_dependency(%q<file-tail>.freeze, ["~> 1.0".freeze])
-  s.add_runtime_dependency(%q<json>.freeze, ["~> 2.0".freeze])
+  s.add_runtime_dependency(%q<json>.freeze, [">= 2.0".freeze, "< 4".freeze])
   s.add_runtime_dependency(%q<term-ansicolor>.freeze, ["~> 1.3".freeze])
-  s.add_runtime_dependency(%q<redlock>.freeze, [">= 0".freeze])
   s.add_runtime_dependency(%q<excon>.freeze, [">= 0".freeze])
 end
