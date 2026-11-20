@@ -1,5 +1,15 @@
 # Changes
 
+## 2026-11-20 v2.5.0
+
+### Improvements
+
+- Widened the `json` dependency constraint from `~> 2.0` to `>= 2.0, < 4` in
+  `Rakefile` and `betterlog.gemspec` to allow compatibility with `json`
+  **3.x**.
+- Removed the unused `redlock` runtime dependency from `Rakefile` and
+  `betterlog.gemspec`.
+
 ## 2026-11-20 v2.4.0
 
 ### Fixes
