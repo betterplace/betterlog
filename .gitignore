@@ -8,10 +8,9 @@
 .utilsrc
 .yardoc
 Gemfile.lock
-betterlog-server
 coverage
+cscope.out
 doc
 errors.lst
-gospace
 pkg
 tags

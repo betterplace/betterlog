@@ -11,7 +11,7 @@ GemHadar do
   ignore      '.*.sw[pon]', 'pkg', 'Gemfile.lock', 'coverage', '.rvmrc',
     '.ruby-version', '.AppleDouble', 'tags', '.DS_Store', '.utilsrc',
     '.bundle', '.byebug_history', 'errors.lst', '.yardoc', 'doc',
-    'betterlog-server', 'gospace'
+    'cscope.out'
   package_ignore '.all_images.yml', '.utilsrc', '.rspec', '.tool-versions',
     '.gitignore', *Dir['.semaphore/**/*'], *Dir['.github/**/*']
   readme      'README.md'
