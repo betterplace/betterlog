@@ -1,5 +1,42 @@
 # Changes
 
+## 2026-11-23 v2.5.1
+
+### Improvements
+
+- Added a GitHub Pages workflow to deploy YARD documentation from the `doc/`
+  directory to GitHub Pages on pushes to `master` and via manual
+  `workflow_dispatch`.
+- Renamed the `## Download` section in `README.md` to `## Links` and added a
+  link to the YARD documentation hosted on GitHub Pages.
+
+### Documentation
+
+- Corrected the `-s` flag description in `README.md` to state that it "shows only" matching events, rather than "filters out" non-matching ones.
+- Updated the `-p FORMAT` example in `README.md` from `long, short` to `long,
+  legacy` to match the formats defined in the example `log.yml`.
+- Updated the architecture and sequence diagrams in `README.md` to remove
+  `EventFormatter` from the library logging path, clarifying that it is a
+  CLI-only component.
+- Added a separate `CLI (betterlog binary)` subgraph to the architecture
+  diagram in `README.md`.
+- Renamed `LegacyFormatter` to `LegacyEventFormatter` in the architecture
+  diagram in `README.md`.
+- Added a note under the Installation section in `README.md` specifying the
+  Ruby `>= 3.2` requirement.
+- Restructured `CHANGES.md` to categorize historical entries (v0.2.0–v2.3.0)
+  into standard sections such as `Breaking`, `Features`, `Fixes`,
+  `Improvements`, `Build & CI`, `Testing`, and `Documentation`.
+- Compressed the v2.4.0 YARD accuracy findings in `CHANGES.md` into a single
+  summary entry.
+- Trimmed the v2.5.0 entry in `CHANGES.md` to focus on the `json` dependency
+  widening and `redlock` removal.
+
+### Build & CI
+
+- Registered `github_workflows('static.yml' => {})` in `Rakefile` to ensure
+  `gem_hadar` tracks the new workflow file.
+
 ## 2026-11-20 v2.5.0
 
 ### Improvements
