@@ -318,11 +318,10 @@ instead of its default logger. The system also includes a
 `Betterlog::Log::LegacyEventFormatter` that ensures compatibility with existing
 Rails logging formats.
 
-## Download
+## Links
 
-The homepage of this library is located at
-
-* https://github.com/betterplace/betterlog
+- **Source**: https://github.com/betterplace/betterlog
+- **Documentation**: https://betterplace.github.io/betterlog/
 
 ## Author
 
