@@ -23,6 +23,10 @@ GemHadar do
     filename 'CHANGES.md'
   end
 
+  github_workflows(
+    'static.yml' => {}
+  )
+
   required_ruby_version '>= 3.2'
 
   dependency 'tins',           '~>1.47'
