@@ -1,5 +1,14 @@
 # Changes
 
+## 2026-11-23 v2.5.2
+
+### Build & CI
+
+- Updated `actions/checkout` from `v6` to **v7** in
+  `.github/workflows/static.yml`.
+- Raised minimum `gem_hadar` version from **2.24.1** to **2.27.2** in
+  `betterlog.gemspec`.
+
 ## 2026-11-23 v2.5.1
 
 ### Improvements
