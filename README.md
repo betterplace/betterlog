@@ -18,6 +18,8 @@ You can also put this line into your Gemfile:
 and bundle. This will make the `Betterlog` module and its logging facilities
 available.
 
+> **Requires Ruby `>= 3.2`.**
+
 ## Usage
 
 ### Basic Logging
@@ -70,7 +72,7 @@ $ betterlog -h
 - `-c` Enable colors during pretty printing
 - `-f` Follow the log files in real-time
 - `-h` Display help information
-- `-p FORMAT` Pretty print log files (e.g., `long`, `short`)
+- `-p FORMAT` Pretty print log files (e.g., `long`, `legacy`)
 - `-e EMITTER` Only output events from specific emitters
 - `-s MATCH` Only display events matching search string
 - `-S SEVERITY` Only output events with specified severity level
@@ -89,8 +91,7 @@ Search for specific terms in log files:
 $ betterlog -f -s SELECT
 ```
 
-This filters out all logging messages where `meta: { module: 'api_v4' }` was
-given:
+This shows only events where `meta: { module: 'api_v4' }` was given:
 
 ```
 $ betterlog -f -s meta:module=api_v4
@@ -119,29 +120,32 @@ together to provide structured logging:
 
 ```mermaid
 graph TD
-    A[Application Code] --> B(Log Interface)
+    A[Application Code] --> B[Log Interface]
     B --> C[Betterlog::Log]
     C --> D[Event Creation]
     D --> E[JSON Serialization]
-    E --> F[Formatting Engine]
-    F --> G[Output to Logger]
+    E --> G[Output to Logger]
 
     subgraph "Rails Integration"
         H[Rails.logger]
-        I[LegacyFormatter]
-        J[Structured Logging]
-        H <---> I
-        I <---> J
+        I[LegacyEventFormatter]
+        H <--> I
     end
 
     C --> H
+
+    subgraph "CLI (betterlog binary)"
+        K[betterlog] --> L[EventFormatter]
+        L --> M[Colorized / Formatted Terminal Output]
+    end
 ```
 
-**Diagram Explanation**: This shows how the system is structured. Application
-code calls the logging interface (`Log.info`), which creates structured events
-and processes them through JSON serialization and formatting before outputting
-to either Rails' logger or a default logger. The Rails integration section
-shows how it seamlessly connects with Rails' existing logging infrastructure.
+**Diagram Explanation**: The library path (top) shows how application code
+calls `Log.info`, which creates a structured event, serializes it to JSON,
+and writes it to the Rails logger or the default logger. The
+`EventFormatter` is **not** in this path — it lives in the CLI subgraph and
+is only used by the `betterlog` binary for pretty-printing log files and
+stdin.
 
 ### Logging Flow
 
@@ -151,22 +155,23 @@ When you call a logging method, the following process occurs:
 sequenceDiagram
     participant App as Application
     participant Log as Betterlog::Log
-    participant Formatter as EventFormatter
-    participant Logger as Rails.logger/DefaultLogger
+    participant Event as Log::Event
+    participant Logger as Rails.logger / DefaultLogger
 
     App->>Log: Log.info(message, data)
-    Log->>Formatter: format(pretty: false)
-    Formatter->>Formatter: JSON.generate(event)
-    Formatter->>Logger: logger.info(json_string)
-    Logger-->>App: Success/Failure
+    Log->>Event: Event.ify(object, **rest)
+    Event-->>Log: structured event
+    Log->>Log: emit(event)
+    Log->>Logger: logger.send(severity, JSON.generate(event))
+    Logger-->>App: written to log file
 ```
 
 **Diagram Explanation**: This illustrates the complete logging workflow. When
-you call `Log.info()`, it goes through the Betterlog::Log (or Log) class, gets
-formatted into a structured event with JSON serialization, and finally outputs
-to either Rails' logger or the default logger. The process is designed to
-maintain structured logging while being compatible with existing Rails logging
-systems.
+you call `Log.info()`, the message is converted into a structured `Log::Event`
+via `Event.ify`, then emitted through `JSON.generate` directly to the Rails
+logger (or the default logger). The `EventFormatter` is not part of this
+path — it is a CLI-only concern used by the `betterlog` binary for
+pretty-printing.
 
 ### Thread-Local Metadata
 
