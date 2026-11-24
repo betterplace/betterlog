@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 describe Betterlog::Log::Event do
   describe '#as_json' do
     it 'dups hash before returning it' do

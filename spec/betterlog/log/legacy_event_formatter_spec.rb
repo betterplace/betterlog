@@ -1,4 +1,3 @@
-require 'spec_helper'
 module ActiveSupport
   class Logger
     class Formatter

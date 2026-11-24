@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 describe Betterlog::Log do
   around do |example|
     Time.dummy '2011-11-11 11:11:11+01:00' do

@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 describe Betterlog::GlobalMetadata do
   describe '.add' do
     it 'can add to context' do

@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 describe Betterlog::Log::Severity do
   it 'has all constants' do
     expect(described_class.all.map(&:to_s).sort).to\
